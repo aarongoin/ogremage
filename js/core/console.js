@@ -59,14 +59,14 @@ define(["./loop", "./colorwheel", "./sma"], function(lupe, color, sma) {
          * @param  {number} time timestamp of call
          */
         render = function(time) {
-            var c, n = window.performance, t;
-            t = n.now();
+            var c, t;
+            t = Date.now();
             ctx.globalCompositeOperation = 'source-over';
             while ((c = redraw.shift())) { // pull next tile coords to redraw
                 blit(tiles[c[0]][c[1]], c[2]); // use coords to blit correct tile
             }
 
-            fps.innerHTML = "FPS: " + (1000 / avg(n.now() - t) >> 0);
+            fps.innerHTML = "FPS: " + (1000 / avg(Date.now() - t) >> 0);
         },
 
         forceDraw = function() {

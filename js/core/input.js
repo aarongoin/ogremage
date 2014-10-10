@@ -106,7 +106,7 @@ define(["./canvas"], function(canvas) {
         var e = {};
             e.preventDefault = mouse.preventDefault;
             e.touches = [{pagex: mouse.screenX, pageY: mouse.screenY}];
-            e.touches[0].identifier = window.performance.now();
+            e.touches[0].identifier = Date.now();
             e.changedTouches = e.touches;
 
         touchStart(e);
@@ -117,7 +117,7 @@ define(["./canvas"], function(canvas) {
         var e = {};
             e.preventDefault = mouse.preventDefault;
             e.changedTouches = [{pagex: mouse.screenX, pageY: mouse.screenY}];
-            e.changedTouches[0].identifier = window.performance.now();
+            e.changedTouches[0].identifier = Date.now();
             e.touches = [];
 
         touchEnd(e);
