@@ -122,21 +122,21 @@ define(["./loop", "./colorwheel", "./sma"], function(lupe, color, sma) {
         // change char?
         if ((t.c !== undefined) && (t.c !== c.c)) {
             c.c = t.c;
-            F += 1;
+            F |= 1;
         }
 
         // change foreground color?
         if ((t.f !== undefined) && (t.f !== c.f)) {
             c.f = t.f;
-            F += 2;
-            if (typeof t.f === String) F += 8;
+            F |= 2;
+            if (typeof t.f === String) F |= 8;
         }
 
         // change background color?
         if ((t.b !== undefined) && (t.b !== c.b)) {
             c.b = t.b;
-            F += 4;
-            if (typeof t.b === String) F += 16;
+            F |= 4;
+            if (typeof t.b === String) F |= 16;
         }
 
         if (F & 0) return false;
