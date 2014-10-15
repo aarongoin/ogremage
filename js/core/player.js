@@ -10,13 +10,13 @@ define(function() {
 
     pc.pos = function() { return [self.x, self.y]; };
 
-    pc.draw = function() { 
+    pc.draw = function() {
         var i = {};
         i.x = self.x;
         i.y = self.y;
         i.c = self.c;
         i.f = self.f;
-        return self;
+        return i;
     };
     return pc;
 });
