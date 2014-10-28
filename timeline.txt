@@ -1,0 +1,11 @@
+11/01/14 - true-color console that can draw ASCII chars to the screen, a map that draws to the screen and a player character to move around
+
+12/01/14 - dynamic field of view calculation, with dynamic monsters who will track and attack the player
+
+01/01/15 - dynamic lighting, and a simple random map generator
+
+02/01/15 - world simulation, npc factions and interfaction relations. factions have some kind of collective memory/action cohesion.
+
+03/01/15 - magic and particles, mutable environment
+
+04/01/15 - networked play, portals to random places, can happen upon other players.

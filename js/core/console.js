@@ -3,7 +3,6 @@ define(["./loop", "./colorwheel", "./sma"], function(lupe, color, sma) {
     var c = {},
         redraw = [], // tiles that need redrawn [x, y, draw flag]
         ctx, // canvas context
-        pixel, // number of pixels wide/tall a tile is
         sprites = new Image(), // image object containing spritesheet
         tiles = [], // objects holding a tile object
         width, // number of tiles wide (x values)
@@ -22,7 +21,7 @@ define(["./loop", "./colorwheel", "./sma"], function(lupe, color, sma) {
         blit = function(tile, flag) {
             var x = tile.x,
                 y = tile.y,
-                p = pixel;
+                p = c.pixel;
 
             if ((flag & 8) && (tile.c !== 0)) { /*custom fore && non-empty*/
                 // clear tile
@@ -201,7 +200,7 @@ define(["./loop", "./colorwheel", "./sma"], function(lupe, color, sma) {
         // set up console private vars
         ctx = context;
         sprites.src = sprite_src;
-        pixel = char_px;
+        c.pixel = char_px; // number of pixels wide/tall a tile is
         c.resize(w, h);
 
         console.log("tiles wide: " + width + " tall: " + height);
@@ -223,9 +222,9 @@ define(["./loop", "./colorwheel", "./sma"], function(lupe, color, sma) {
                                 y: y,  // y coord in pixels
                                 f: 5, // foreground color
                                 b: 5}); // background color
-                y += pixel;
+                y += c.pixel;
             }
-            x += pixel;
+            x += c.pixel;
         }
     };
 
@@ -252,7 +251,7 @@ define(["./loop", "./colorwheel", "./sma"], function(lupe, color, sma) {
      * get console tile dimensions
      * @return {Array} array holding width and height
      */
-    c.dim = function() { return [width, height]; };
+    c.dim = function() { return [width, height, pixel]; };
 
     /**
      * overload to get notice of console ready state

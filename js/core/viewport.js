@@ -51,7 +51,7 @@ define(["./map", "core/flags", "core/console"], function(map, flags, con) {
                         // clear (left, top)->(left, bottom)
                         map[left][i].F ^= flags.INPCLOS;
                         // add (right+1, top)->(right+1, bottom)
-                        map[right][i].F |= flags.INPCLOS;
+                        map[right][i].F |= flags.INPCLOS; // TODO: works only if fov == 'full'
                         i++;
                     }
                     left++;
@@ -64,7 +64,7 @@ define(["./map", "core/flags", "core/console"], function(map, flags, con) {
                         // clear (right, top)->(right, bottom)
                         map[right][i].F ^= flags.INPCLOS;
                         // add (left-1, top)->(left-1, bottom)
-                        map[left][i].F |= flags.INPCLOS;
+                        map[left][i].F |= flags.INPCLOS; // TODO: works only if fov == 'full'
                         i++;
                     }
                     right--;
@@ -81,7 +81,7 @@ define(["./map", "core/flags", "core/console"], function(map, flags, con) {
                         // clear (left, top)->(right, top)
                         map[i][top].F ^= flags.INPCLOS;
                         // add (left, bottom+1)->(right, bottom+1)
-                        map[i][bottom].F |= flags.INPCLOS;
+                        map[i][bottom].F |= flags.INPCLOS; // TODO: works only if fov == 'full'
                         i++;
                     }
                     top++;
@@ -94,7 +94,7 @@ define(["./map", "core/flags", "core/console"], function(map, flags, con) {
                         // clear (left, bottom)->(right, bottom)
                         map[i][bottom].F ^= flags.INPCLOS;
                         // add (left, top-1)->(right, top-1)
-                        map[i][top].F |= flags.INPCLOS;
+                        map[i][top].F |= flags.INPCLOS; // TODO: works only if fov == 'full'
                         i++;
                     }
                     bottom--;
