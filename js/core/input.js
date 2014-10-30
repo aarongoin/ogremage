@@ -1,7 +1,8 @@
-define(["core/console", "core/handle"], function(con, han) {
+define(["./console", "./handler"], function(con, han) {
     var input = {},
         w, h,
-        current = [];
+        current = [],
+        lastTap = null;
 
     /**
      * gets all current touches that have changed with callback hook
@@ -43,7 +44,8 @@ define(["core/console", "core/handle"], function(con, han) {
         i = added.length;
         while (i--) gesture.push( added[i] );
 
-        han.begin(gesture);
+        gesture.state = "begin";
+        han(gesture);
     };
 
     /**
@@ -52,12 +54,14 @@ define(["core/console", "core/handle"], function(con, han) {
      * @param  {boolean} mouse if this is a mouse event
      */
     var gestureMove = function(moved, mouse) {
-        var i, t,
+        var i, t, len = moved.length,
             gesture = [];
 
         gesture.isMouse = mouse || false;
         gesture.recognized = (mouse) ? moved.recognized : "unknown";
 
+        gesture.tileX = 0;
+        gesture.tileY = 0;
         gesture.distance = 0;
         gesture.speed = 0;
         gesture.dt = 0;
@@ -72,23 +76,31 @@ define(["core/console", "core/handle"], function(con, han) {
             t.distance = Math.sqrt( (t.dx * t.dx) + (t.dy * t.dy) );
             t.speed = t.dis / t.dt;
 
+            // summing touch values for calculating gesture averages
+            gesture.tileX += t.tileX;
+            gesture.tileY += t.tileY;
             gesture.distance += t.distance;
             gesture.dt += t.dt;
 
             gesture.push(t);
         }
 
-        gesture.distance /= gesture.length;
-        gesture.dt /= gesture.length;
+        // dividing sums by length for gesture averages
+        gesture.tileX /= len;
+        gesture.tileY /= len;
+        gesture.distance /= len;
+        gesture.dt /= len;
+
         gesture.speed = gesture.distance / gesture.dt;
 
         if (!mouse || (mouse && moved.recognized === "simple")) {
-            gesture.recognized = (gesture.speed > 50) ? "swipe" : "drag";
+            gesture.recognized = (gesture.speed > 50) ? "Swipe" : "Drag";
         } else {
             gesture.recognized = moved.recognized;
         }
 
-        han.move(gesture);
+        gesture.state = "moving";
+        han(gesture);
     };
 
     /**
@@ -97,17 +109,19 @@ define(["core/console", "core/handle"], function(con, han) {
      * @param  {boolean} mouse if this is a mouse event
      */
     var gestureEnd = function(removed, mouse) {
-        var i, g, t,
+        var i, g, t, len,
             gesture = [];
 
         gesture.isMouse = mouse || false;
         gesture.recognized = (mouse) ? removed.recognized : "unknown";
 
+        gesture.tileX = 0;
+        gesture.tileY = 0;
         gesture.distance = 0;
         gesture.speed = 0;
         gesture.dt = 0;
 
-        i = removed.length;
+        i = len;
         while (i--) {
             g = {};
             t = removed[i];
@@ -119,31 +133,61 @@ define(["core/console", "core/handle"], function(con, han) {
             g.distance = Math.sqrt( square(g.dx) + square(g.dy) );
             g.speed = g.dis / g.dt;
 
+            // summing touch values for calculating gesture averages
+            gesture.tileX += t.tileX;
+            gesture.tileY += t.tileY;
             gesture.distance += g.distance;
             gesture.dt += g.dt;
 
             gesture.push(g);
         }
 
-        gesture.distance /= gesture.length;
-        gesture.dt /= gesture.length;
+        // dividing sums by length for gesture averages
+        gesture.tileX /= len;
+        gesture.tileY /= len;
+        gesture.distance /= len;
+        gesture.dt /= len;
+
         gesture.speed = gesture.distance / gesture.dt;
 
         // detect touch type
         // TODO - recognize pinch and rotate gestures along with directionality for non-mouse gestures
         if (!mouse || (mouse && moved.recognized === "simple")) {
             if (gesture.distance < 50) {
-                gesture.recognized = (gesture.dt > 1000) ? "hold" : "tap";
+                if (gesture.dt > 1000) {
+                    gesture.recognized = "Hold";
+                } else if ((lastTap) &&
+                           (Date.now() - lastTap.end < 300) &&
+                           (lastTap.count === gesture.length) &&
+                           (lastTap.tileX === gesture.tileX) &&
+                           (lastTap.tileY === gesture.tileY)) {
+                    gesture.recognized = "Double";
+
+                    // ensure we cannot fire a doubletap immediately after another doubletap
+                    lastTap = null;
+                } else {
+                    gesture.recognized = "Tap";
+
+                    // save this tap for detecting doubletap
+                    lastTap = {
+                          end: Date.now(),
+                        count: gesture.length,
+                        tileX: gesture.tileX,
+                        tileY: gesture.tileY
+                    };
+
+                }
             } else if (gesture.speed > 50) {
-                gesture.recognized = "swipe";
+                gesture.recognized = "Swipe";
             } else {
-                gesture.recognized = "drag";
+                gesture.recognized = "Drag";
             }
         } else {
             gesture.recognized = removed.recognized;
         }
 
-        han.end(gesture);
+        gesture.state = "ended";
+        han(gesture);
     };
 
     /**
@@ -250,9 +294,9 @@ define(["core/console", "core/handle"], function(con, han) {
         // WARNING - given nature of touch spoofing: ctrl + button-1 followed by shift + button-2
         //           will result in a 3-touch rotation gesture because the shift will overwrite the ctrl
         // TODO - handle both at the same time for pinch-rotate gesture
-        mod = (event.ctrlKey  && !event.shiftKey) ? "pinch" :
-              (event.shiftKey && !event.ctrlKey) ? "rotate" : null;
-        current.recognized = (mod && l > 1) ? mod : "simple";
+        mod = (event.ctrlKey  && !event.shiftKey) ? "Pinch" :
+              (event.shiftKey && !event.ctrlKey) ? "Rotate" : null;
+        current.recognized = (mod && l > 1) ? mod : "Simple";
         // mouse has small advantage here to touch because based on the
         // presence of modifier keys, we can actually infer complex gestures
 

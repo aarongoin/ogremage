@@ -1,4 +1,4 @@
-define(["./loop", "./colorwheel", "./sma"], function(lupe, color, sma) {
+define(["./util/loop", "./util/colorwheel", "./util/sma"], function(lupe, color, sma) {
     console.log("prep: console");
     var c = {},
         redraw = [], // tiles that need redrawn [x, y, draw flag]
@@ -22,7 +22,7 @@ define(["./loop", "./colorwheel", "./sma"], function(lupe, color, sma) {
             var x = tile.x,
                 y = tile.y,
                 p = c.pixel;
-
+`
             if ((flag & 8) && (tile.c !== 0)) { /*custom fore && non-empty*/
                 // clear tile
                 ctx.clearRect(x, y, p, p);

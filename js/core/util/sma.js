@@ -1,6 +1,6 @@
 define(function() {
     /**
-     * return simple moving average object for storing and calculating an sma
+     * return simple moving average object for storing and calculating a sma
      * @param  {number} n positive integer -- how many data points to include in the moving average
      * @return {object}   new sma object
      */

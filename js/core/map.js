@@ -1,9 +1,9 @@
-define(["core/marray", "core/flags"], function(marry, flags) {
+define(["./util/marray", "./flags"], function(marry, flags) {
     var map = {height: 100, width: 100 };
 
     map.init = function(w, h) {
         var x = 0, y = 0;
-        map = marry(w, h, function() { return {c: 1, f: 3, b: 0, F: 1}; });
+        map = marry(w, h, function() { return {c: 1, f: 3, b: 0, F: 1, a: true}; });
         map.width = w;
         map.height = h;
 
