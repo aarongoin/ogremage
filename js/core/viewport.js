@@ -1,4 +1,4 @@
-define(["./map", "core/flags", "core/console"], function(map, flags, con) {
+define(["./map", "./flags", "./console"], function(map, flags, con) {
     var viewport = {},
         left, top, right, bottom,
         width, height,
