@@ -9,8 +9,8 @@ define(function() {
         SUNLIT:   16, // 00000000000000000000000000010000 (this tile is sunlit)
         HASOBJ:   32, // 00000000000000000000000000100000 (there's an object here)
         HASMOB:   64, // 00000000000000000000000001000000 (there's a mob here)
+        NONEMPTY: 96, // HASOBJ | HASMOB
         HASITM:  128, // 00000000000000000000000010000000 (there's an item here--could be more than 1)
-        NONEMPTY: 224,// HASOBJ | HASMOB | HASITM
         CANOPN:  256  // 00000000000000000000000100000000 (door or other portal type)
    };
 });

@@ -1,9 +1,9 @@
 define(["./util/marray", "./flags"], function(marry, flags) {
-    var map = {height: 100, width: 100 };
+    var map;
 
     map.init = function(w, h) {
         var x = 0, y = 0;
-        map = marry(w, h, function() { return {c: 1, f: 3, b: 0, F: 1, a: true}; });
+        map = marry(w, h, function() { return {c: 1, f: 3, b: 0, F: 1, a: true, occupied: false}; });
         map.width = w;
         map.height = h;
 
@@ -28,6 +28,72 @@ define(["./util/marray", "./flags"], function(marry, flags) {
             map[w][y].F |= flags.ISWALL;
             y++;
         }
+    };
+
+    map.tileOpen = function(x, y) {
+        var tile = map[x][y];
+        if (tile.occupied) return false;
+        return tile;
+    };
+
+    map.border8 = function(x, y) {
+        var border = [],
+            tile;
+
+        // bottom left
+        tile = map[x-1][y-1];
+        if (tile) border.push(tile);
+
+        // left
+        tile = map[x-1][y];
+        if (tile) border.push(tile);
+
+        // top left
+        tile = map[x-1][y+1];
+        if (tile) border.push(tile);
+
+        // top
+        tile = map[x][y+1];
+        if (tile) border.push(tile);
+
+        // top right
+        tile = map[x+1][y+1];
+        if (tile) border.push(tile);
+
+        // right
+        tile = map[x+1][y];
+        if (tile) border.push(tile);
+
+        // bottom right
+        tile = map[x+1][y-1];
+        if (tile) border.push(tile);
+
+        // bottom
+        tile = map[x][y-1];
+        if (tile) border.push(tile);
+
+        return b;
+    };
+
+    map.open8 = function(x, y) {
+        var i, border = map.border8(x, y);
+
+        // delete any tiles that are unopen for travel
+        i = border.length;
+        while (i--) if (border[i].occupied) border.splice(i+1, 1);
+
+        // if there are open tiles return them, else return false
+        return (border.length) ? border : false;
+    };
+
+    map.Occupy = function(tile, object) {
+        tile.occupied = object;
+    };
+
+    map.Unoccupy = function(x ,y) {
+        var tile = map[x][y];
+        tile.F &= ~(tile.occupied.F);
+        tile.occupied = false;
     };
 
     return map;

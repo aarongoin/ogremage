@@ -1,4 +1,4 @@
-define(["./console"], function(con) {
+define(["./agent"], function(agent) {
     var pc = {},
         self = {x: 0, y: 0, c: 0, f:5};
 
