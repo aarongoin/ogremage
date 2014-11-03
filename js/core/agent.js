@@ -1,4 +1,4 @@
-define(["map", "jps"], function(map, jps) {
+define(["map", "path"], function(map, path) {
     var agent;
 
     agent = function(init, proto) {
@@ -37,29 +37,40 @@ define(["map", "jps"], function(map, jps) {
             }
         };
 
-        proto.chooseClosest = proto.chooseClosest || function(tile) {
+        /**
+         * get the closest tile to self from stuff passed in
+         * @param  {Array} stuff objects to choose closest from. Objects must have "x" and "y" tile coordinates
+         * @return {Object}      Return closest object of those passed in
+         */
+        proto.chooseClosest = proto.chooseClosest || function(stuff) {
             var distOld, distNew, closest = false;
-                i = tile.length;
+                i = stuff.length;
 
             while (i--) {
                 // check for closest tile found so far
                 if (closest) {
                     // set current tile as closest if it so
-                    distNew = Math.abs(tile[i].x - this.x) + Math.abs(tile[i].y - this.y);
-                    closest = (distNew > distOld) ? closest : tile[i];
+                    distNew = Math.abs(stuff[i].x - this.x) + Math.abs(stuff[i].y - this.y);
+                    closest = (distNew > distOld) ? closest : stuff[i];
                     distOld = distNew;
                 } else {
                     // set first tile in array as the closest tile found so far
-                    closest = tile[i];
-                    distOld = Math.abs(tile[i].x - this.x) + Math.abs(tile[i].y - this.y);
+                    closest = stuff[i];
+                    distOld = Math.abs(stuff[i].x - this.x) + Math.abs(stuff[i].y - this.y);
                 }
             }
 
             return closest;
         };
 
+        /**
+         * set point as agent's goal and pathfind to it.
+         * @param  {Number} x map x coordinate
+         * @param  {Number} y map y coordinate
+         * @return {Boolean}   true if successful, false if not
+         */
         proto.moveTo = proto.moveTo || function(x, y) {
-            var goal = this.goalPath[0];
+            var goal = this.goalPath[this.goalPath.length - 1];
 
             // check that either no goal exists or the new one is different
             if (!goal || (goal.x !== x) || (goal.y !== y)) {
@@ -67,7 +78,8 @@ define(["map", "jps"], function(map, jps) {
                 goal = this.map.tileOpen(x, y);
                 if (goal) { // success! the tile was open and is a valid goal
                     // get the jump point search path
-                    this.goalPath = jps(x, y, this.x, this.y);
+                    this.goalPath = path(x, y, this.x, this.y);
+                    return true;
                 } else { // the tile is not a valid goal
                     // get the surrounding open8
                     goal = this.map.open8(x, y);
@@ -77,7 +89,8 @@ define(["map", "jps"], function(map, jps) {
                         goal = this.chooseClosest(goal);
                         // if a closest tile was returned, get the jump point search path
                         if (goal) {
-                            this.goalPath = jps(x, y, this.x, this.y);
+                            this.goalPath = path(this.x, this.y, x, y);
+                            return true;
                         } else {
                             return false;
                         }
