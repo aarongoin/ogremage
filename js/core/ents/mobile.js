@@ -1,48 +1,29 @@
-define(["map", "path"], function(map, path) {
-    var agent;
+define(["entity", "path"], function(entity, path) {
+    var constructor, prototype;
 
-    agent = function(init, proto) {
+    constructor = function(proto, init) {
         init = init || {};
-        proto = proto || {};
 
-        // default attributes
-        init.title = init.title || "Agent";
-        init.name = init.name || "";
+        proto.isMobile = true;
 
-        // Agent base stats
-        init.health = init.health || 1;
-        init.speed = init.speed || 1;
+        proto.speed = init.speed || 1;
+        proto.goalPath = init.goalPath || [];
 
-        // Agent action stuff
-        init.agency = init.agency || 1;
-        init.goalPath = init.goalPath || [];
-        init.x = init.x || 0;
-        init.y = init.y || 0;
+        proto.chooseClosest = init.chooseClosest || prototype.chooseClosest;
+        proto.move = init.move || prototype.move;
+        proto.moveTo = init.moveTo || prototype.moveTo;
+        proto.updates.push(prototype.update);
 
-        // Agent physical characteristics
-        init.flags = init.flags || 66;
-        init.sprite = init.sprite || 2;
-        init.color = init.color || 7;
+        return proto;
+    };
 
-        // setup prototype
-        proto.map = map;
-
-        proto.move =  proto.move || function(x, y) {
-            var t = this.map.tileOpen(x, y);
-            if (t) {
-                this.map.Occupy(t, this);
-                this.map.Unoccupy(x, y);
-            } else {
-                // TODO - reroute or choose a temporary tile to move to
-            }
-        };
-
+    prototype = {
         /**
          * get the closest tile to self from stuff passed in
          * @param  {Array} stuff objects to choose closest from. Objects must have "x" and "y" tile coordinates
          * @return {Object}      Return closest object of those passed in
          */
-        proto.chooseClosest = proto.chooseClosest || function(stuff) {
+        chooseClosest: function(stuff) {
             var distOld, distNew, closest = false;
                 i = stuff.length;
 
@@ -61,15 +42,23 @@ define(["map", "path"], function(map, path) {
             }
 
             return closest;
-        };
-
+        },
+        move: function(x, y) {
+            var t = this.map.tileOpen(x, y);
+            if (t) {
+                this.map.Occupy(t, this);
+                this.map.Unoccupy(x, y);
+            } else {
+                // TODO - reroute or choose a temporary tile to move to
+            }
+        },
         /**
-         * set point as agent's goal and pathfind to it.
+         * set point as mobile's goal and pathfind to it.
          * @param  {Number} x map x coordinate
          * @param  {Number} y map y coordinate
          * @return {Boolean}   true if successful, false if not
          */
-        proto.moveTo = proto.moveTo || function(x, y) {
+        moveTo: function(x, y) {
             var goal = this.goalPath[this.goalPath.length - 1];
 
             // check that either no goal exists or the new one is different
@@ -99,14 +88,32 @@ define(["map", "path"], function(map, path) {
             } else {
                 return false;
             }
-        };
+        },
+        /**
+         * update!
+         * @param  {array} array of bordering tiles
+         */
+        update: function(borders) {
+            var i = borders.length,
+                p = this.goalPath[0];
+            borders = borders || this.map.border8();
 
-        // TODO - how to implement this?
-        //proto.moveToAct = (proto.moveToAct) ? proto.moveToAct : moveToAct;
-        init.prototype = proto;
-
-        return init;
+            while (i--) {
+                if (p && (p.x === borders[i].x) && (p.y === borders[i].y) &&
+                    (p.type === "move") && (this.agency >= (p.cost / this.speed))) {
+                    if (!borders.occupied) {
+                        this.move(p.x, p.y);
+                        this.goalPath.shift();
+                    } else {
+                        // TODO - handle rerouting because target tile is blocked
+                    }
+                }
+            }
+        }
     };
 
-    return agent;
+    return function(init) {
+        if (init.isEntity) return constructor(init);
+        return constructor(new entity(init), init);
+    };
 });

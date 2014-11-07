@@ -86,13 +86,14 @@ define(["./util/marray", "./flags"], function(marry, flags) {
         return (border.length) ? border : false;
     };
 
-    map.Occupy = function(tile, object) {
+    map.Occupy = function(tile, object, repr) {
         tile.occupied = object;
+        tile.F &= repr.F;
     };
 
-    map.Unoccupy = function(x ,y) {
+    map.Unoccupy = function(x ,y, repr) {
         var tile = map[x][y];
-        tile.F &= ~(tile.occupied.F);
+        tile.F &= ~(repr.F);
         tile.occupied = false;
     };
 
