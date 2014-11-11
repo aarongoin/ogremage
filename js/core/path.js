@@ -4,7 +4,53 @@ define(["../map"], function(map) {
         isClosed,
         heuristic,
         isJamPoint,
-        balanceOf;
+        balanceOf,
+        cluster,
+        trimCluster;
+
+    cluster = function(unclustered) {
+        var clustered = [],
+            open = [],
+            jam,
+            i, j,
+            border, index,
+            prev, preprev;
+
+        open.push(unclustered.pop());
+        do {
+            preprev = prev;
+            prev = jam;
+            jam = open.pop();
+
+            // go through every open border tile
+            border = map.open8(jam.x, jam.y);
+            i = border.length;
+            while (i--) {
+                j = border[i].jam;
+                // check if current tile is a jam point
+                if (j) {
+                    // make sure current jam isn't already connected to this new one
+                    if (jam.next.indexOf(j) === -1) {
+                        j.next.push(jam);
+                        jam.next.push(j);
+                        open.push(j);
+                    }
+                }
+            }
+
+            // remove the jam from list of unclustered
+            i = unclustered.indexOf(jam);
+            if (i !== -1) unclustered.splice(i, 1);
+            clustered.push(jam);
+        } while (open.length);
+
+        return clustered;
+    };
+
+    trimCluster = function(cluster) {
+        var seperated = [];
+        
+    };
 
     balanceOf = function(closed) {
         var balx = 0, baly = 0, i = closed.length;
@@ -39,18 +85,28 @@ define(["../map"], function(map) {
     };
 
     path.createJamNet = function() {
-        var i, test, toPrune = [], prune;
+        var test,
+            unclustered = [],
+            jamClusters = [];
+
+        // check every open tile for jam points
         map.cycleOpen(function(x, y, node) {
             test = isJamPoint(x, y, map.closed8(x, y));
             if (test) {
-                toPrune.push(test);
+                unclustered.push(test);
                 node.jam = test;
             }
         });
 
-        i = toPrune.length;
-        while (toPrune.length) {
-        }
+        // seperate jam points into clusters
+        while (unclustered.length) jamClusters.push(cluster(unclustered));
+
+        // trim hallways from clusters
+        
+
+        this.net = [];
+
+        // connect every cluster to every other one
     };
 
     heuristic = function(dx, dy) {
