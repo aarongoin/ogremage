@@ -35,16 +35,14 @@ define(["util/marray", "flags"], function(marray, flags) {
     };
 
     map.cycleOpen = function(callback) {
-        var x, y, node,
-            w = this.width,
-            h = this.height;
+        var node, w, h;
 
-        x = 0;
-        while (x < w) {
-            y = 0;
-            while (y < h) {
-                node = this.data[x][y];
-                if (!node.occupied) callback(x, y, node);
+        w = this.width;
+        while (w--) {
+            h = this.height;
+            while (h--) {
+                node = this.data[w][h];
+                if (!node.occupied) callback(w, h, node);
             }
         }
     };

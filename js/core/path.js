@@ -5,8 +5,7 @@ define(["map"], function(map) {
         heuristic,
         isJamPoint,
         balanceOf,
-        cluster,
-        trimCluster;
+        cluster;
 
     cluster = function(unclustered) {
         var clustered = [],
@@ -31,9 +30,9 @@ define(["map"], function(map) {
                 if (j) {
                     // make sure current jam isn't already connected to this new one
                     if (jam.next.indexOf(j) === -1) {
+                        if (j.next.length === 0) open.push(j); // checked to prevent multiple additions of the same node
                         j.next.push(jam);
                         jam.next.push(j);
-                        open.push(j);
                     }
                 }
             }
@@ -41,15 +40,13 @@ define(["map"], function(map) {
             // remove the jam from list of unclustered
             i = unclustered.indexOf(jam);
             if (i !== -1) unclustered.splice(i, 1);
+
+            if (jam.next.length === 2 && )
+
             clustered.push(jam);
         } while (open.length);
 
-        return clustered;
-    };
-
-    trimCluster = function(cluster) {
-        var seperated = [];
-        
+        return clustered; 
     };
 
     balanceOf = function(closed) {
@@ -72,6 +69,7 @@ define(["map"], function(map) {
 
         if (length > 1 && length < 8) {
             balance = balanceOf(closed);
+            // 0.66 0.33 0.35 0.
             if (balance < 0.93) { // we found a jam point
                 return {
                           x: x,
@@ -100,9 +98,6 @@ define(["map"], function(map) {
 
         // seperate jam points into clusters
         while (unclustered.length) jamClusters.push(cluster(unclustered));
-
-        // trim hallways from clusters
-        
 
         this.net = [];
 
