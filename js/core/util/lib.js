@@ -1,4 +1,4 @@
-define(function(){
+define(function() {
     return {
         saveObj: function(key, object) {
             localstorage.setItem(key, JSON.stringify(object));

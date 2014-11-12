@@ -1,4 +1,4 @@
-define(["./random"], function(rand){
+define(["./random"], function(rand) {
     console.log("prep: colorwheel");
     var colors = [  '#000000', '#333333', '#666666',  /* grayscale dark  */
                     '#999999', '#cccccc', '#ffffff',  /* grayscale light */

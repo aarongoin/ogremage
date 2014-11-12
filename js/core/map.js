@@ -1,4 +1,4 @@
-define(["./util/marray", "./flags"], function(marray, flags) {
+define(["util/marray", "flags"], function(marray, flags) {
     var map;
 
     map.init = function(w, h) {

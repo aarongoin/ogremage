@@ -1,4 +1,4 @@
-define(["./console", "./handler"], function(con, han) {
+define(["console", "handler"], function(con, han) {
     var input = {},
         w, h,
         current = [],

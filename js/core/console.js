@@ -1,4 +1,4 @@
-define(["./util/loop", "./util/colorwheel", "./util/sma"], function(lupe, color, sma) {
+define(["./loop", "./util/colorwheel", "./util/sma"], function(lupe, color, sma) {
     console.log("prep: console");
     var c = {},
         redraw = [], // tiles that need redrawn [x, y, draw flag]
@@ -22,7 +22,7 @@ define(["./util/loop", "./util/colorwheel", "./util/sma"], function(lupe, color,
             var x = tile.x,
                 y = tile.y,
                 p = c.pixel;
-`
+
             if ((flag & 8) && (tile.c !== 0)) { /*custom fore && non-empty*/
                 // clear tile
                 ctx.clearRect(x, y, p, p);
@@ -251,7 +251,7 @@ define(["./util/loop", "./util/colorwheel", "./util/sma"], function(lupe, color,
      * get console tile dimensions
      * @return {Array} array holding width and height
      */
-    c.dim = function() { return [width, height, pixel]; };
+    c.dim = function() { return [width, height, c.pixel]; };
 
     /**
      * overload to get notice of console ready state
@@ -263,10 +263,10 @@ define(["./util/loop", "./util/colorwheel", "./util/sma"], function(lupe, color,
     c.resize = function(w, h, trim) {
         var old_w = width, old_h = height;
         trim = trim || false;
-        width = (w / pixel) >> 0;
-        mx = ((w - width * pixel) / 2) >> 0;
-        height = (h / pixel) >> 0;
-        my = ((h - height * pixel) / 2) >> 0;
+        width = (w / c.pixel) >> 0;
+        mx = ((w - width * c.pixel) / 2) >> 0;
+        height = (h / c.pixel) >> 0;
+        my = ((h - height * c.pixel) / 2) >> 0;
         /*
         if (trim) {
             old_w -= width;

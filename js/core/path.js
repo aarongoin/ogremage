@@ -1,4 +1,4 @@
-define(["../map"], function(map) {
+define(["map"], function(map) {
     var path = {},
         sortInto,
         isClosed,
