@@ -1,8 +1,8 @@
-define(["./loop", "./util/colorwheel", "./util/sma"], function(lupe, color, sma) {
+define(["./canvas", "../util/loop", "../util/colorwheel", "../util/sma"], function(canvas, lupe, color, sma) {
     console.log("prep: console");
     var c = {},
         redraw = [], // tiles that need redrawn [x, y, draw flag]
-        ctx, // canvas context
+        ctx = canvas.ctx(), // canvas context
         sprites = new Image(), // image object containing spritesheet
         tiles = [], // objects holding a tile object
         width, // number of tiles wide (x values)
@@ -11,7 +11,7 @@ define(["./loop", "./util/colorwheel", "./util/sma"], function(lupe, color, sma)
         my, // left margin (letterboxing) in pixels
 
         fps = document.getElementById('fps'),
-        avg = sma(300); // initialize our simple moving average calculator
+        avg = sma(180), // initialize our simple moving average calculator
 
 
         /**
@@ -190,11 +190,11 @@ define(["./loop", "./util/colorwheel", "./util/sma"], function(lupe, color, sma)
         while ((t = m.pop())) { c.swap(t.x, t.y, t); }
     };
 
-    c.init = function(context, dim, sprite_src, char_px) {
+    c.init = function(sprite_src, char_px) {
         console.log("init: console");
         console.log("sprites src: " + sprite_src + " pixels: " + char_px);
-        var w = dim[0],
-            h = dim[1],
+        var w = canvas.width,
+            h = canvas.height,
             x, y, i, j;
 
         // set up console private vars

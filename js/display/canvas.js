@@ -21,6 +21,9 @@ define(function(){
     });
 
     c = {
+        width: canvas.width,
+        height: canvas.height,
+        ratio: ratio,
         /**
          * get canvas context
          * @return {object} canvas context

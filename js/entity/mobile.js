@@ -1,4 +1,4 @@
-define(["entity", "path"], function(entity, path) {
+define(["./entity", "../local/navnet"], function(entity, navnet) {
     var constructor, prototype;
 
     constructor = function(proto, init) {
@@ -43,14 +43,16 @@ define(["entity", "path"], function(entity, path) {
 
             return closest;
         },
+
         move: function(x, y) {
             var t = this.map.tileOpen(x, y);
             if (t) {
                 this.map.Occupy(t, this);
                 this.map.Unoccupy(x, y);
-            } else {
-                // TODO - reroute or choose a temporary tile to move to
+                return true;
             }
+
+            return false;
         },
         /**
          * set point as mobile's goal and pathfind to it.
@@ -66,8 +68,8 @@ define(["entity", "path"], function(entity, path) {
                 // get the open tile
                 goal = this.map.tileOpen(x, y);
                 if (goal) { // success! the tile was open and is a valid goal
-                    // get the jump point search path
-                    this.goalPath = path(x, y, this.x, this.y);
+                    // get the jump point search navnet
+                    this.goalPath = navnet(x, y, this.x, this.y);
                     return true;
                 } else { // the tile is not a valid goal
                     // get the surrounding open8
@@ -76,9 +78,9 @@ define(["entity", "path"], function(entity, path) {
                     if (goal) {
                         // get closest tile of those passed
                         goal = this.chooseClosest(goal);
-                        // if a closest tile was returned, get the jump point search path
+                        // if a closest tile was returned, get the jump point search navnet
                         if (goal) {
-                            this.goalPath = path(this.x, this.y, x, y);
+                            this.goalPath = navnet(this.x, this.y, x, y);
                             return true;
                         } else {
                             return false;

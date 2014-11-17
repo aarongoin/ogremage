@@ -1,11 +1,12 @@
-define(["util/marray", "flags"], function(marray, flags) {
+define(["../util/marray", "./flags"],
+function(marray, flags) {
     var map;
 
     map.init = function(w, h) {
         var x = 0, y = 0;
-        this.data = marray(w, h, function() { return {c: 1, f: 3, b: 0, F: 1, a: true, occupied: false, jam: false}; });
-        map.width = w;
-        map.height = h;
+        this.data = marray(w, h, function() { return {c: 1, f: 3, b: 0, F: 1, a: true, occupied: false, space: 0}; });
+        this.width = w;
+        this.height = h;
 
         // create walls around map
         w--;
@@ -138,6 +139,24 @@ define(["util/marray", "flags"], function(marray, flags) {
 
         // if there are closed tiles return them, else return false
         return (border.length) ? border : false;
+    };
+
+    map.balanceOf = function(x, y) {
+        var balx = 0, baly = 0,
+            closed, i;
+
+        closed = map.closed8(x, y);
+        i = closed.length;
+        while (i--) { // get x and y balance of closed tiles
+            balx += closed[i].dx;
+            baly += closed[i].dy;
+        }
+        // square each balance
+        balx *= balx;
+        baly *= baly;
+
+        // return magnitude of balance divided by number of closed tiles
+        return ( Math.sqrt(balx + baly) / closed.length );
     };
 
     map.Occupy = function(tile, object, repr) {

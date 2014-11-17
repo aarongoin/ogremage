@@ -1,4 +1,4 @@
-define(["../map", "../flags"], function(map, flags) {
+define(["../local/map", "../local/flags"], function(map, flags) {
     var prototype = {
         update: function() {
             var i = this.updates.length;

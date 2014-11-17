@@ -1,10 +1,10 @@
-define(["mobile"], function(mobile) {
+define(["./primal"], function(primal) {
     var constructor, prototype;
 
     constructor = function(proto, init) {
         init = init || {};
 
-        proto.isPrimal = true;
+        proto.isPack = true;
         proto.updates.push(prototype.update);
     };
 
@@ -14,13 +14,13 @@ define(["mobile"], function(mobile) {
          * @param  {array} array of bordering tiles
          */
         update: function(borders) {
-            // TODO - primal updating!
+            // TODO - pack updating!
 
         }
     };
 
     return function(init) {
-        if (init.isMobile) return constructor(init);
-        return constructor(mobile(init), init);
+        if (init.isPrimal) return constructor(init);
+        return constructor(primal(init), init);
     };
 });

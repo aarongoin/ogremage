@@ -1,4 +1,4 @@
-require(["./core/canvas", "./core/console", "./core/util/colorwheel", "./core/util/random", "./core/loop"],
+require(["./display/canvas", "./display/console", "./util/colorwheel", "./util/random", "./util/loop"],
 function(canvas, con, color, rand, lupe) {
     console.log("exec: main");
     var dim, x, y, z, t = {},

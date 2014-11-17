@@ -1,4 +1,4 @@
-define(["pack"], function(pack) {
+define(["./pack"], function(pack) {
     var constructor, prototype;
 
     constructor = function(proto,init) {

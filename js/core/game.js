@@ -1,26 +1,36 @@
-define(["console", "loop", "handle", "local", "time"],
-function(console, loop, handle, local, time) {
+define(["../display/console", "../util/loop", "./handle", "./local", "./clock", "./menu"],
+function(console, loop, handle, local, clock, menu) {
     var game = {},
         states = {
-            "loading": [],
-            "loaded": []
+            "ready": function() {
+                menu.init();
+            },
+            "play": function() { loop.add(game.update, true); }
         };
 
-    console.ready = function() {
-        game.setState("loaded");
-        loop.add(game.update, true);
+    game.init = function(sprites, pixel) {
+        console.ready = function() {
+            game.setState("ready");
+            console.run(true);
+        };
+        console.init(canvas.ctx(), canvas.dim(), "./img/sprites20c.png", 20);
+        menu.create({
+            title: "Main Menu",
+            buttons: [
+                {title: "Start", click: function() { game.setState("play"); }}
+            ],
+        });
     };
 
     game.setState = function(state) {
-        var i;
-        // ignore if setting to same state
-        if (this.state !== states[state]) {
-            // set state
+        // ignore if state is not valid or if setting to same state
+        if (states[state] && (this.state !== states[state])) {
+
+            // set new state
             this.state = states[state];
 
-            // fire callbacks for this state change
-            i = this.state.length;
-            while (i--) this.state[i]();
+            // fire callbacks for beginning state
+            if (this.state) this.state();
         }
     };
 
@@ -33,7 +43,8 @@ function(console, loop, handle, local, time) {
     };
 
     game.update = function(dt) {
-
+        var delta = clock.tick();
+        local.update(delta);
     };
 
     return game;
