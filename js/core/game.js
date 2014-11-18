@@ -1,5 +1,5 @@
-define(["../display/console", "../util/loop", "./handle", "./local", "./clock", "./menu"],
-function(console, loop, handle, local, clock, menu) {
+define(["../display/console", "../util/loop", "./handle", "./local", "./clock", "./menu", "./player"],
+function(console, loop, handle, local, clock, menu, player) {
     var game = {},
         states = {
             "ready": function() {
@@ -12,14 +12,20 @@ function(console, loop, handle, local, clock, menu) {
         console.ready = function() {
             game.setState("ready");
             console.run(true);
+
         };
-        console.init(canvas.ctx(), canvas.dim(), "./img/sprites20c.png", 20);
+        console.init(canvas.ctx(), canvas.dim(), "./img/sprites" + pixel + "c.png", pixel);
         menu.create({
             title: "Main Menu",
+            isMain: true,
             buttons: [
                 {title: "Start", click: function() { game.setState("play"); }}
             ],
         });
+
+        handle.set("t1Tap", player.moveTo);
+        handle.set("t1Hold", player.interact);
+        handle.set("t1Double", player.moveToAndAct);
     };
 
     game.setState = function(state) {

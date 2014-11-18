@@ -253,6 +253,14 @@ define(["./canvas", "../util/loop", "../util/colorwheel", "../util/sma"], functi
      */
     c.dim = function() { return [width, height, c.pixel]; };
 
+    c.width = width;
+    c.height = height;
+
+    c.clear = function(rgba) {
+        ctx.fillStyle = rgba;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    };
+
     /**
      * overload to get notice of console ready state
      */

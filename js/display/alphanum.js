@@ -1,5 +1,8 @@
 define(function() {
 	var alphanum = { chars: {
+			// space
+			" ": 0,
+
 			// uppercase letters
 			"A": 65,
 			"B": 66,
@@ -70,15 +73,18 @@ define(function() {
 		}
 	};
 
-	alphanum.spriteString = function(string) {
+	alphanum.spritesFromString = function(string) {
 		var i, l, c, s = [];
 
 		l = string.length;
 		i = 0;
 		while (i < l) {
 			c = this.chars[string.charAt(i)];
+			
 			if (c) s.push(c);
 			else s.push(0);
+
+			i++;
 		}
 
 		return s;

@@ -38,7 +38,7 @@ define(function() {
             type = "t" + gesture.length + gesture.recognized;
             handle.gesture = gesture;
             if (handle[type]) handle[type](gesture);
-        } else inactive(gesture);
+        } else if (inactive) inactive(gesture);
     };
 
     handle.logGesture = function(gesture) {
@@ -52,7 +52,10 @@ define(function() {
 
     handle.start = function() { active = true; };
 
-    handle.stop = function() { active = false; };
+    handle.stop = function(callback) {
+        inactive = callback || inactive;
+        active = false;
+    };
 
     handle.inactive = function(callback) { inactive = callback; };
 
