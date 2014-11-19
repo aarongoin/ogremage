@@ -1,22 +1,14 @@
-define(["../entity/agent"], function(agent) {
-    var pc = {},
-        self = {x: 0, y: 0, c: 0, f:5};
+define(["../entity/mobile", "../util/override"], function(base, override) {
+    var player = base();
 
-    pc.init = function(x, y, c) {
-        self.x = x;
-        self.y = y;
-        self.c = c;
-    };
+    /**
+     * override base entity moveTo method to handle user t1Tap gesture
+     * @param  {Object} gesture  touch gesture passed by handler to this object
+     */
+    player.moveTo = override(player.moveTo, function(moveTo, gesture){
+        // decipher location from gesture
+        moveTo(gesture.tileX, gesture.tileY);
+    });
 
-    pc.pos = function() { return [self.x, self.y]; };
-
-    pc.draw = function() {
-        var i = {};
-        i.x = self.x;
-        i.y = self.y;
-        i.c = self.c;
-        i.f = self.f;
-        return i;
-    };
-    return pc;
+    return player;
 });

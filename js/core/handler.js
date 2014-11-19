@@ -36,6 +36,7 @@ define(function() {
         var type;
         if (active) {
             type = "t" + gesture.length + gesture.recognized;
+            gesture.type = type;
             handle.gesture = gesture;
             if (handle[type]) handle[type](gesture);
         } else if (inactive) inactive(gesture);

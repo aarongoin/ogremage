@@ -1,7 +1,7 @@
 define(["./pack"], function(pack) {
     var constructor, prototype;
 
-    constructor = function(proto,init) {
+    constructor = function(proto, init) {
         init = init || {};
 
         proto.isAgent = true;

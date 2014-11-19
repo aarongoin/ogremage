@@ -47,7 +47,7 @@ define(["./canvas", "../util/loop", "../util/colorwheel", "../util/sma"], functi
 
             if (flag & 8) {
                 ctx.globalCompositeOperation = 'source-over';
-            } else if ((flag & 3) && (tile.c !== 0)) {
+            } else if ((flag & 3)) {
                 // draws only if non-blank char
                 ctx.drawImage(sprites, tile.c * p, tile.f * p, p, p, x, y, p, p);
             }
@@ -119,7 +119,7 @@ define(["./canvas", "../util/loop", "../util/colorwheel", "../util/sma"], functi
             F = 0; // draw flags
 
         // change char?
-        if ((t.c !== undefined) && (t.c !== c.c)) {
+        if ((t.c !== undefined)) {
             c.c = t.c;
             F |= 1;
         }
@@ -190,15 +190,18 @@ define(["./canvas", "../util/loop", "../util/colorwheel", "../util/sma"], functi
         while ((t = m.pop())) { c.swap(t.x, t.y, t); }
     };
 
-    c.init = function(sprite_src, char_px) {
+    c.init = function(sprite_src, char_px, ready) {
         console.log("init: console");
+
+        c.ready = ready || c.ready;
+
         console.log("sprites src: " + sprite_src + " pixels: " + char_px);
         var w = canvas.width,
             h = canvas.height,
             x, y, i, j;
 
         // set up console private vars
-        ctx = context;
+        ctx = canvas.ctx();
         sprites.src = sprite_src;
         c.pixel = char_px; // number of pixels wide/tall a tile is
         c.resize(w, h);

@@ -31,7 +31,7 @@ define(["./random"], function(rand) {
 
         any: function() {
             var c = rand.simples(0, 255, 3);
-            return "rgb(" + c[0] + ", " + c[1] + " , " + c[2] + ")";
+            return "rgb(" + c[0] + ", " + c[1] + ", " + c[2] + ")";
         },
 
         /**

@@ -1,4 +1,4 @@
-define(["../local/player", "../local/items", "../local/mobs", "../local/objects", "../local/scene", "../local/map", "../local/hud"],
+define(["../entity/player", "../local/items", "../local/mobs", "../local/objects", "../local/scene", "../local/map", "../local/hud"],
 function(player, items, mobs, objects, scene, map, hud) {
     var local = {};
 

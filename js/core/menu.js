@@ -100,7 +100,7 @@ define(["../display/console", "../display/alphanum", "./handler"], function(con,
 	menu.create = function(menu) {
 		var buttons = menu.buttons,
 			l = buttons.length,
-			i = 0, b, main = false,
+			i = 0, b,
 			cX = Math.round(con.width / 2),
 			cY = Math.round(con.height / l);
 

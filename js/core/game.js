@@ -1,31 +1,30 @@
-define(["../display/console", "../util/loop", "./handle", "./local", "./clock", "./menu", "./player"],
-function(console, loop, handle, local, clock, menu, player) {
+define(["./display", "../util/loop", "./handle", "./local", "./clock", "./menu", "../entity/player"],
+function(display, loop, handle, local, clock, menu, player) {
     var game = {},
         states = {
             "ready": function() {
-                menu.init();
+                menu.show("Main Menu");
             },
-            "play": function() { loop.add(game.update, true); }
+            "play": game.start
         };
 
     game.init = function(sprites, pixel) {
-        console.ready = function() {
-            game.setState("ready");
-            console.run(true);
 
-        };
-        console.init(canvas.ctx(), canvas.dim(), "./img/sprites" + pixel + "c.png", pixel);
+        // create our main menu
         menu.create({
             title: "Main Menu",
-            isMain: true,
             buttons: [
                 {title: "Start", click: function() { game.setState("play"); }}
             ],
         });
 
+        // set default handlers
         handle.set("t1Tap", player.moveTo);
-        handle.set("t1Hold", player.interact);
+        handle.set("t1Hold", player.Act);
         handle.set("t1Double", player.moveToAndAct);
+
+        // initialize our display with mouse gestures
+        display.init(sprites, pixel, true, function() { game.setState("ready"); });
     };
 
     game.setState = function(state) {
@@ -46,6 +45,10 @@ function(console, loop, handle, local, clock, menu, player) {
             states[state].push(callback);
             return true;
         } else return false;
+    };
+
+    game.start = function() {
+        loop.add(game.update, true);
     };
 
     game.update = function(dt) {

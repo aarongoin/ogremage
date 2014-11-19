@@ -1,7 +1,8 @@
-require(["./display/canvas", "./display/console", "./util/colorwheel", "./util/random", "./util/loop"],
-function(canvas, con, color, rand, lupe) {
+require(["./display/alphanum", "./display/canvas", "./display/console", "./util/colorwheel", "./util/random", "./util/loop"],
+function(alphanum, canvas, con, color, rand, lupe) {
     console.log("exec: main");
     var dim, x, y, z, t = {},
+        ogremage = alphanum.spritesFromString("OGREMAGE"),
 
         test = function(dt) {
             dim = con.dim();
@@ -10,19 +11,27 @@ function(canvas, con, color, rand, lupe) {
             while(x--) {
                 y = dim[1];
                 while(y--) {
-                    t.c = rand.lfsr(0, 256);
-                    t.f = color.color();
-                    t.b = color.color();
+                    if ((y === 10) && (x < 10) && (x > 1)) {
+                        t.c = (rand.simple(0, 100) < 95) ? ogremage[x - 2] : rand.lfsr(0, 256);
+                        t.f = (rand.simple(0, 100) < 95) ? 5 : color.color();
+                    } else {
+                        t.c = rand.lfsr(0, 256);
+                        t.f = color.color();
+                    }
+                    t.b = color.gray();
                     con.swap(x, y, t);
                 }
             }
+            
         };
+
+    console.log(ogremage);
 
     con.ready = function() {
         con.run(true);
         lupe.add(test, true);
     };
-    con.init(canvas.ctx(), canvas.dim(), "./img/sprites20c.png", 20);
+    con.init("./img/sprites30c.png", 30);
     /*canvas.resize = function() { con.resize(canvas.dim()[0], canvas.dim()[1], true); };
     */
    var b = document.getElementById('pause');

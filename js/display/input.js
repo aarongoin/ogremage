@@ -25,8 +25,8 @@ define(["./console", "../core/handler"], function(con, han) {
      * @return {object}       returns modified touch object
      */
     var touchTile = function(touch) {
-        touch.tileX = (touch.screenX / con.pixel) >> 0;
-        touch.tileY = (touch.screenY / con.pixel) >> 0;
+        touch.tileX = Math.round(touch.screenX / con.pixel);
+        touch.tileY = Math.round(touch.screenY / con.pixel);
         return touch;
     };
 

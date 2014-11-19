@@ -182,5 +182,7 @@ define(["./map"], function(map) {
         });
     };
 
+    navnet.Neighbors = function(x, y) { return map[x][y].space.edges; };
+
     return navnet;
 });
