@@ -256,9 +256,6 @@ define(["./canvas", "../util/loop", "../util/colorwheel", "../util/sma"], functi
      */
     c.dim = function() { return [width, height, c.pixel]; };
 
-    c.width = width;
-    c.height = height;
-
     c.clear = function(rgba) {
         ctx.fillStyle = rgba;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -274,9 +271,9 @@ define(["./canvas", "../util/loop", "../util/colorwheel", "../util/sma"], functi
     c.resize = function(w, h, trim) {
         var old_w = width, old_h = height;
         trim = trim || false;
-        width = (w / c.pixel) >> 0;
+        this.width = width = (w / c.pixel) >> 0;
         mx = ((w - width * c.pixel) / 2) >> 0;
-        height = (h / c.pixel) >> 0;
+        this.height = height = (h / c.pixel) >> 0;
         my = ((h - height * c.pixel) / 2) >> 0;
         /*
         if (trim) {

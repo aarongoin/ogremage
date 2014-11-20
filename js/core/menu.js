@@ -1,6 +1,6 @@
 define(["../display/console", "../display/alphanum", "./handler"], function(con, alphanum, handle) {
 	var menu = {},
-		dict,
+		dict = {},
 		current,
 		down,
 		toggle,
@@ -38,7 +38,7 @@ define(["../display/console", "../display/alphanum", "./handler"], function(con,
 
 	buttonTiles = function(x, y, title, colors, margins) {
 		var spriteChars = alphanum.spritesFromString(title),
-			i, m, tiles;
+			i, m, tiles = [];
 
 		// create left margin tiles
 		i = margins.left;
@@ -73,7 +73,7 @@ define(["../display/console", "../display/alphanum", "./handler"], function(con,
 			}
 		}
 
-		return t;
+		return tiles;
 	};
 
 	menu.show = function(title) {
@@ -122,6 +122,7 @@ define(["../display/console", "../display/alphanum", "./handler"], function(con,
 			b.y0 = (cY * i) - (cY / 2) >> 0;
 
 			// create button console representation
+			b.tiles = b.tiles || {};
 			b.tiles.up = b.tiles.up || buttonTiles(b.x0, b.y0, b.title, b.up, b.margins);
 			b.tiles.down = b.tiles.down || buttonTiles(b.x0, b.y0, b.title, b.down, b.margins);
 

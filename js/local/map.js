@@ -1,33 +1,44 @@
 define(["../util/marray", "./flags"],
 function(marray, flags) {
-    var map;
+    var map = {};
 
-    map.init = function(w, h) {
-        var x = 0, y = 0;
-        this.data = marray(w, h, function() { return {c: 1, f: 3, b: 0, F: 1, a: true, occupied: false, space: 0}; });
+    map.init = function(init) {
+        var x, y, c, f,
+            w = init.width,
+            h = init.height;
+
+        c = init.floor.c;
+        f = init.floor.f;
+        this.data = marray(w, h, function() { return {c: c, f: f, b: 0, F: 1, a: true, occupied: false, space: 0}; });
         this.width = w;
         this.height = h;
 
-        // create walls around map
-        w--;
-        h--;
-        while (x <= w) {
-            this.data[x][0].c = 3;
-            this.data[x][0].f = 6;
-            this.data[x][0].F |= flags.ISWALL;
-            this.data[x][h].c = 3;
-            this.data[x][h].f = 6;
-            this.data[x][h].F |= flags.ISWALL;
-            x++;
-        }
-        while (y <= h) {
-            this.data[0][y].c = 3;
-            this.data[0][y].f = 6;
-            this.data[0][y].F |= flags.ISWALL;
-            this.data[w][y].c = 3;
-            this.data[w][y].f = 6;
-            this.data[w][y].F |= flags.ISWALL;
-            y++;
+        if (init.type === "arena") {
+            // create walls around map
+            c = init.wall.c;
+            f = init.wall.f;
+            x = 0;
+            y = 0;
+            w--;
+            h--;
+            while (x <= w) {
+                this.data[x][0].c = c;
+                this.data[x][0].f = f;
+                this.data[x][0].F |= flags.ISWALL;
+                this.data[x][h].c = c;
+                this.data[x][h].f = f;
+                this.data[x][h].F |= flags.ISWALL;
+                x++;
+            }
+            while (y <= h) {
+                this.data[0][y].c = c;
+                this.data[0][y].f = f;
+                this.data[0][y].F |= flags.ISWALL;
+                this.data[w][y].c = c;
+                this.data[w][y].f = f;
+                this.data[w][y].F |= flags.ISWALL;
+                y++;
+            }
         }
     };
 
@@ -164,7 +175,7 @@ function(marray, flags) {
         tile.F &= repr.F;
     };
 
-    map.Unoccupy = function(x ,y, repr) {
+    map.Unoccupy = function(x, y, repr) {
         var tile = this.data[x][y];
         tile.F &= ~(repr.F);
         tile.occupied = false;

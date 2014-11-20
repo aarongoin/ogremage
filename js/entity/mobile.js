@@ -47,11 +47,12 @@ define(["./entity", "../local/navnet"], function(entity, navnet) {
         move: function(x, y) {
             var t = this.map.tileOpen(x, y);
             if (t) {
-                this.map.Occupy(t, this);
-                this.map.Unoccupy(x, y);
+                this.map.Occupy(t, this, this.flags);
+                this.map.Unoccupy(this.x, this.y, this.flags);
+                this.x = x;
+                this.y = y;
                 return true;
             }
-
             return false;
         },
         /**
@@ -115,7 +116,7 @@ define(["./entity", "../local/navnet"], function(entity, navnet) {
     };
 
     return function(init) {
-        if (init.isEntity) return constructor(init);
+        if (init && init.isEntity) return constructor(init);
         return constructor(new entity(init), init);
     };
 });

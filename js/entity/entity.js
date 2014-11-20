@@ -1,11 +1,31 @@
 define(["../local/map", "../local/flags"], function(map, flags) {
     var prototype = {
+        place: function(x, y) {
+            var open,
+                tile = map.tileOpen(x, y);
+            if (tile) {
+                this.x = x;
+                this.y = y;
+                return true;
+            }
+
+            open = map.open8(x, y);
+            if (open) {
+                this.x = x + open[0].dx;
+                this.y = y + open[0].dy;
+                return true;
+            } else return false;
+        },
+
         update: function() {
             var i = this.updates.length;
             while (i--) this.updates[i]();
         }
     };
+
     return function(init) {
+        init = init || {};
+
         var tile;
 
         this.isEntity = true;
@@ -31,9 +51,6 @@ define(["../local/map", "../local/flags"], function(map, flags) {
         this.updates = [];
         this.update = prototype.update;
 
-        // initialize on map
-        tile = map.tileOpen(init.x, init.y);
-        if (!tile) return false;
-        map.Occupy(tile, init, init.states[init.state]);
+        this.place = prototype.place;
     };
 });

@@ -1,24 +1,28 @@
 define(["./map", "./flags", "../display/console"],
 function(map, flags, con) {
     var viewport = {},
-        left, top, right, bottom,
-        width, height,
+        left, top, right, bottom, // in map coords
+        width = con.width,
+        height = con.height,
         fov;
 
     /**
      * initialize viewport object
-     * @param  {int} x top-left corner (map x-coord)
-     * @param  {int} y top-left corner (map y-coord)
-     * @param  {int} w width in tiles
-     * @param  {int} h height in tiles
+     * @param  {int} px player x-coord (map x-coord)
+     * @param  {int} py player y-coord (map y-coord)
+     * @param  {String} w player fov
      */
-    viewport.init = function(x, y, w, h) {
-        left = x;
-        right = x + w - 1;
-        top = y;
-        bottom = y + h - 1;
-        width = w;
-        height = h;
+    viewport.init = function(px, py) {
+        fov = fov || "full";
+
+        // init viewport location
+        left = px - ((width / 2) >> 0);
+        right = left + width - 1;
+        top = py - ((height / 2) >> 0);
+        bottom = top + height - 1;
+
+        // duhhhh
+        this.draw();
     };
 
     /**
@@ -26,7 +30,8 @@ function(map, flags, con) {
      * @param {String} type type of field of view to use
      *                      "full" - player can see full viewport, with no FOV calculations
      *                      "los" - player can see line of sight only
-     *                      "fow" - player can see line of sight, and map tiles they've visited
+     *                      "fow" - player can see line of sight, and map tiles they've visited,
+     *                              but not any entities outside of line of sight
      */
     viewport.FOV = function(type) {
         if ((type === "full") ||

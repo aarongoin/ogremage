@@ -7,6 +7,8 @@ function(con, input) {
             input.init(mouse);
             this.run(true);
 			callback();
+			display.width = this.width;
+			display.height = this.height;
         });
 	};
 

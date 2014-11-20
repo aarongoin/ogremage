@@ -1,5 +1,5 @@
 define(function() {
-    console.log("prep: loop");
+    console.log("loop: init module");
         var callbacks = [],
             timeout = [],
             active = false,
@@ -71,7 +71,7 @@ define(function() {
 
                 if (draw) { block(callback); } else { async(callback); }
                 if (!active) {
-                    console.log("beginning loop");
+                    console.log("loop: starting...");
                     active = true;
                     main();
                 }
@@ -88,7 +88,10 @@ define(function() {
             pause: function() {
                 active = !active;
                 if (active) {
+                    console.log("loop: starting...");
                     main();
+                } else {
+                    console.log("loop: pausing...");
                 }
             }
         };

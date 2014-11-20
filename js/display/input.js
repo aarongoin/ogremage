@@ -2,7 +2,8 @@ define(["./console", "../core/handler"], function(con, han) {
     var input = {},
         w, h,
         current = [],
-        lastTap = null;
+        lastTap = null,
+        mgTimerID = null;
 
     /**
      * gets all current touches that have changed with callback hook

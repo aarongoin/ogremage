@@ -1,4 +1,4 @@
-define(["./display", "../util/loop", "./handle", "./local", "./clock", "./menu", "../entity/player"],
+define(["./display", "../util/loop", "./handler", "./local", "./clock", "./menu", "./player"],
 function(display, loop, handle, local, clock, menu, player) {
     var game = {},
         states = {
@@ -20,8 +20,8 @@ function(display, loop, handle, local, clock, menu, player) {
 
         // set default handlers
         handle.set("t1Tap", player.moveTo);
-        handle.set("t1Hold", player.Act);
-        handle.set("t1Double", player.moveToAndAct);
+        //handle.set("t1Hold", player.Act);
+        //handle.set("t1Double", player.moveToAndAct);
 
         // initialize our display with mouse gestures
         display.init(sprites, pixel, true, function() { game.setState("ready"); });
@@ -48,6 +48,29 @@ function(display, loop, handle, local, clock, menu, player) {
     };
 
     game.start = function() {
+        console.log("game: starting5");
+        local.init({
+            // where to place player
+            player: { x: 0, y: 0 },
+
+            // how to color the map as well as environmental effects
+            scene: {
+                global: "rgba(1, .7, .3, .5)",
+                 gloom: 0,
+                   fog: 0,
+                  rain: 0,
+                  wind: 0
+            },
+            // map generation variables
+            map: {
+                  type: "arena",
+                 width: display.width,
+                height: display.height,
+                  wall: {c: 4, f: 2, b: 0},
+                 floor: {c: 6, f: 4, b: 0}
+            }
+        });
+
         loop.add(game.update, true);
     };
 
