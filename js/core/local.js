@@ -17,11 +17,13 @@ function(player, map, navnet) {
     local.update = function(energy) {
         var i;
 
-        player.spark(energy);
+        player.update(energy);
+        /*
         i = mobs.length;
         while (i--) {
             mobs[i].spark(spark);
         }
+        */
     };
 
     return local;

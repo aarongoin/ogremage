@@ -366,7 +366,7 @@ define(["./console", "../core/handler"], function(con, han) {
      */
     input.init = function(mouse) {
 
-        console.log("init: input");
+        console.log("input: init " + ((mouse) ? "mouse" : "touch"));
         if (mouse) {
             canvas.addEventListener("mousedown", mouseDown);
             canvas.addEventListener("mousemove", mouseMove);

@@ -1,4 +1,4 @@
-define(["../local/map", "../local/flags"], function(map, flags) {
+define(["../local/map", "../local/flags", "../display/console"], function(map, flags, con) {
     var prototype = {
         place: function(x, y) {
             var open,
@@ -17,10 +17,17 @@ define(["../local/map", "../local/flags"], function(map, flags) {
             } else return false;
         },
 
-        update: function() {
+        update: function(energy) {
             var i = this.updates.length;
-            while (i--) this.updates[i]();
+            //while (i--) this.updates[i](energy);
+            this.draw();
+        },
+
+        draw: function() {
+            console.log("entity: draw");
+            con.swap(this.x, this.y, this.state);
         }
+
     };
 
     return function(init) {
@@ -50,7 +57,7 @@ define(["../local/map", "../local/flags"], function(map, flags) {
 
         this.updates = [];
         this.update = prototype.update;
-
         this.place = prototype.place;
+        this.draw = prototype.draw;
     };
 });

@@ -79,6 +79,7 @@ define(["../display/console", "../display/alphanum", "./handler"], function(con,
 	menu.show = function(title) {
 		var i;
 		current = dict[title];
+		console.log("CURRENT: " + current.title);
 		if (!current) {
 			console.log("Error: " + title + " is an invalid menu");
 			return;
@@ -102,7 +103,7 @@ define(["../display/console", "../display/alphanum", "./handler"], function(con,
 			l = buttons.length,
 			i = 0, b,
 			cX = Math.round(con.width / 2),
-			cY = Math.round(con.height / l);
+			cY = Math.round(con.height / (l + 1));
 
 
 		while (i < l) {
@@ -113,13 +114,17 @@ define(["../display/console", "../display/alphanum", "./handler"], function(con,
 			b.isDown = false;
 			b.click = b.click || prototype.click;
 
+			console.log("menu: " + menu.title + " button: " + b.title);
+
 			// button display properties
 			b.up = b.up || prototype.up;
 			b.down = b.down || prototype.down;
 			b.margins = b.margins || prototype.margins;
 
 			b.x0 = cX - (b.w / 2) >> 0;
-			b.y0 = (cY * i) - (cY / 2) >> 0;
+			b.y0 = (cY * (i + 1)) - (cY / 2) >> 0;
+
+			console.log("cy * i = " + (cY * (i + 1)));
 
 			// create button console representation
 			b.tiles = b.tiles || {};

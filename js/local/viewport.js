@@ -2,8 +2,8 @@ define(["./map", "./flags", "../display/console"],
 function(map, flags, con) {
     var viewport = {},
         left, top, right, bottom, // in map coords
-        width = con.width,
-        height = con.height,
+        width,
+        height,
         fov;
 
     /**
@@ -13,7 +13,10 @@ function(map, flags, con) {
      * @param  {String} w player fov
      */
     viewport.init = function(px, py) {
+        console.log("viewport: init at " + px + "," + py);
         fov = fov || "full";
+        width = con.width;
+        height = con.height;
 
         // init viewport location
         left = px - ((width / 2) >> 0);
@@ -55,9 +58,9 @@ function(map, flags, con) {
                     i = top;
                     while (i <= bottom) {
                         // clear (left, top)->(left, bottom)
-                        map[left][i].F ^= flags.INPCLOS;
+                        map.data[left][i].F ^= flags.INPCLOS;
                         // add (right+1, top)->(right+1, bottom)
-                        map[right][i].F |= flags.INPCLOS; // TODO: works only if fov == 'full'
+                        map.data[right][i].F |= flags.INPCLOS; // TODO: works only if fov == 'full'
                         i++;
                     }
                     left++;
@@ -68,9 +71,9 @@ function(map, flags, con) {
                     i = top;
                     while (i <= bottom) {
                         // clear (right, top)->(right, bottom)
-                        map[right][i].F ^= flags.INPCLOS;
+                        map.data[right][i].F ^= flags.INPCLOS;
                         // add (left-1, top)->(left-1, bottom)
-                        map[left][i].F |= flags.INPCLOS; // TODO: works only if fov == 'full'
+                        map.data[left][i].F |= flags.INPCLOS; // TODO: works only if fov == 'full'
                         i++;
                     }
                     right--;
@@ -85,9 +88,9 @@ function(map, flags, con) {
                     i = left;
                     while (i <= right) {
                         // clear (left, top)->(right, top)
-                        map[i][top].F ^= flags.INPCLOS;
+                        map.data[i][top].F ^= flags.INPCLOS;
                         // add (left, bottom+1)->(right, bottom+1)
-                        map[i][bottom].F |= flags.INPCLOS; // TODO: works only if fov == 'full'
+                        map.data[i][bottom].F |= flags.INPCLOS; // TODO: works only if fov == 'full'
                         i++;
                     }
                     top++;
@@ -98,9 +101,9 @@ function(map, flags, con) {
                     i = left;
                     while (i <= right) {
                         // clear (left, bottom)->(right, bottom)
-                        map[i][bottom].F ^= flags.INPCLOS;
+                        map.data[i][bottom].F ^= flags.INPCLOS;
                         // add (left, top-1)->(right, top-1)
-                        map[i][top].F |= flags.INPCLOS; // TODO: works only if fov == 'full'
+                        map.data[i][top].F |= flags.INPCLOS; // TODO: works only if fov == 'full'
                         i++;
                     }
                     bottom--;
@@ -122,7 +125,7 @@ function(map, flags, con) {
             map_y = bottom;
             con_y = height;
             while (con_y--) {
-                tile = map[map_x][map_y];
+                tile = map.data[map_x][map_y];
                 if ((tile.F & flags.INPCLOS) ||
                     ((fov !== 'los') && (tile.F & flags.MAPPED))) {
                     con.swap(con_x, con_y, tile);

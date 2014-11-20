@@ -5,10 +5,12 @@ define(function() {
         inactive;
 
     handle = function(gesture) {
+        console.log("handle: handling...");
         var type;
         if (active) {
             type = "t" + gesture.length + gesture.recognized;
             gesture.type = type;
+            console.log("handle: gesture type: " + type);
             handle.gesture = gesture;
             if (handle[type]) handle[type](gesture);
         } else if (inactive) inactive(gesture);

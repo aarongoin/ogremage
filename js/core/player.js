@@ -6,7 +6,8 @@ function(viewport, base, override) {
      * override base entity moveTo method to handle user t1Tap gesture
      * @param  {Object} gesture  touch gesture passed by handler to this object
      */
-    player.moveTo = override(player.moveTo, function(moveTo, gesture){
+    player.moveTo = override(player.moveTo, function(moveTo, gesture) {
+        console.log("player: moveTo " + gesture.tileX + "," + gesture.tileY);
         moveTo(gesture.tileX, gesture.tileY);
     });
 
@@ -15,10 +16,16 @@ function(viewport, base, override) {
      * @param  {int} x x-coord
      * @param  {int} y y-coord
      */
-    player.move = override(player.move, function(move, x, y){
+    player.move = override(player.move, function(move, x, y) {
         var dx = this.x - x,
             dy = this.y - y;
         if ( move(x, y) ) viewport.update(dx, dy);
+    });
+
+    player.place = override(player.place, function(place, x, y) {
+        console.log("player: placing...");
+        if ( place(x, y) ) viewport.init(x, y);
+        console.log("player: placed");
     });
 
     return player;

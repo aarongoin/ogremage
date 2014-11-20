@@ -1,5 +1,5 @@
-require(["./core/game", "./display/alphanum", "./display/canvas", "./display/console", "./util/colorwheel", "./util/random", "./util/loop"],
-function(game, alphanum, canvas, con, color, rand, lupe) {
+require(["./display/alphanum", "./display/canvas", "./display/console", "./util/colorwheel", "./util/random", "./util/loop", "./core/game"],
+function(alphanum, canvas, con, color, rand, lupe, game) {
     console.log("exec: main");
     var dim, x, y, z, t = {},
         ogremage = alphanum.spritesFromString("OGREMAGE"),
@@ -33,7 +33,7 @@ function(game, alphanum, canvas, con, color, rand, lupe) {
     con.init("./img/sprites30c.png", 30);
     */
    
-    game.init("./img/sprites30c.png", 30);
+    game.init("./img/sprites20c.png", 20);
 
     var b = document.getElementById('pause');
 

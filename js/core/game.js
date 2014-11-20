@@ -1,30 +1,31 @@
 define(["./display", "../util/loop", "./handler", "./local", "./clock", "./menu", "./player"],
 function(display, loop, handle, local, clock, menu, player) {
     var game = {},
-        states = {
-            "ready": function() {
-                menu.show("Main Menu");
-            },
-            "play": game.start
-        };
+        states;
 
     game.init = function(sprites, pixel) {
-
-        // create our main menu
-        menu.create({
-            title: "Main Menu",
-            buttons: [
-                {title: "Start", click: function() { game.setState("play"); }}
-            ],
-        });
-
-        // set default handlers
-        handle.set("t1Tap", player.moveTo);
-        //handle.set("t1Hold", player.Act);
-        //handle.set("t1Double", player.moveToAndAct);
+        console.log("game: init");
 
         // initialize our display with mouse gestures
-        display.init(sprites, pixel, true, function() { game.setState("ready"); });
+        display.init(sprites, pixel, true, function() {
+            /*
+            // create our main menu
+            menu.create({
+                title: "Main Menu",
+                buttons: [
+                    {title: "Start", click: function() { game.setState("play"); }}
+                ],
+            });
+            console.log("menu create");
+            */
+            
+            // set default handlers
+            //handle.set("t1Tap", player.moveTo);
+            //handle.set("t1Hold", player.Act);
+            //handle.set("t1Double", player.moveToAndAct);
+
+            game.setState("ready");
+        });
     };
 
     game.setState = function(state) {
@@ -47,8 +48,13 @@ function(display, loop, handle, local, clock, menu, player) {
         } else return false;
     };
 
+    game.update = function(dt) {
+        var delta = clock.tick();
+        local.update(delta);
+    };
+
     game.start = function() {
-        console.log("game: starting5");
+        console.log("game: starting");
         local.init({
             // where to place player
             player: { x: 0, y: 0 },
@@ -64,19 +70,24 @@ function(display, loop, handle, local, clock, menu, player) {
             // map generation variables
             map: {
                   type: "arena",
-                 width: display.width,
-                height: display.height,
-                  wall: {c: 4, f: 2, b: 0},
-                 floor: {c: 6, f: 4, b: 0}
+                 width: display.width(),
+                height: display.height(),
+                  wall: {c: 35, f: 2, b: 0},
+                 floor: {c: 46, f: 4, b: 0}
             }
         });
+        handle.start();
 
         loop.add(game.update, true);
     };
 
-    game.update = function(dt) {
-        var delta = clock.tick();
-        local.update(delta);
+    states = {
+        ready: function() {
+            //menu.show("Main Menu");
+            console.log("game: ready");
+            game.setState("play");
+        },
+        play: game.start
     };
 
     return game;

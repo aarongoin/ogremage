@@ -175,11 +175,15 @@ define(["./map"], function(map) {
     };
 
     navnet.createNavNet = function() {
+        console.log("navnet: creating...");
+
         // cycle through every open map tile
         map.cycleOpen(function(x, y, node) {
             // if the node has no associated space: create one
             if (!node.space) mapSpace(x, y);
         });
+
+        console.log("navnet: nodes: " + this.data.length);
     };
 
     navnet.Neighbors = function(x, y) { return map[x][y].space.edges; };

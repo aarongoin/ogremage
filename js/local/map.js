@@ -1,19 +1,32 @@
 define(["../util/marray", "./flags"],
 function(marray, flags) {
-    var map = {};
+    var map = {data: null};
 
     map.init = function(init) {
         var x, y, c, f,
             w = init.width,
             h = init.height;
 
-        c = init.floor.c;
-        f = init.floor.f;
-        this.data = marray(w, h, function() { return {c: c, f: f, b: 0, F: 1, a: true, occupied: false, space: 0}; });
+        console.log("map: init");
+
+        this.data = marray(w, h, function() {
+            return {
+                       c: init.floor.c,
+                       f: init.floor.f,
+                       b: 0,
+                       F: 1,
+                       a: true,
+                occupied: false,
+                   space: 0
+            };
+        });
+
+        console.log("" + this.data[0][0].F);
         this.width = w;
         this.height = h;
 
         if (init.type === "arena") {
+            console.log("map: init arena");
             // create walls around map
             c = init.wall.c;
             f = init.wall.f;
@@ -127,7 +140,7 @@ function(marray, flags) {
             border.push(tile);
         }
 
-        return b;
+        return border;
     };
 
     map.open8 = function(x, y) {

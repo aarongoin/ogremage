@@ -1,14 +1,12 @@
 define(["../display/console", "../display/input"],
 function(con, input) {
-	var display = {};
+	var display = {width: function() { return con.width; }, height: function() { return con.height; } };
 
 	display.init = function(sprites, pixel, mouse, callback) {
 		con.init(sprites, pixel, function() {
             input.init(mouse);
             this.run(true);
 			callback();
-			display.width = this.width;
-			display.height = this.height;
         });
 	};
 

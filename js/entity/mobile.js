@@ -7,7 +7,7 @@ define(["./entity", "../local/navnet"], function(entity, navnet) {
         proto.isMobile = true;
 
         proto.speed = init.speed || 1;
-        proto.goalPath = init.goalPath || [];
+        proto.goalPath = [];
 
         proto.chooseClosest = init.chooseClosest || prototype.chooseClosest;
         proto.move = init.move || prototype.move;
