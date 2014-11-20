@@ -8,7 +8,7 @@ function(player, map, navnet) {
         map.init(init.map);
 
         // create navnet
-        navnet.createNavNet();
+        //navnet.createNavNet();
 
         // place player into map
         player.place(((map.width / 2) >> 0), ((map.height / 2) >> 0));

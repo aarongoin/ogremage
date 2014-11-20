@@ -42,8 +42,8 @@ define(["../local/map", "../local/flags", "../display/console"], function(map, f
         this.map = map;
         this.flags = flags;
 
-        this.x = init.x || 0;
-        this.y = init.y || 0;
+        this.x = init.x || 5;
+        this.y = init.y || 5;
 
         // energy is the baseline of life and hitpoints
         // at energy = 0, the entity is dead
@@ -53,11 +53,11 @@ define(["../local/map", "../local/flags", "../display/console"], function(map, f
             "dormant": {c: 2, f: 7, F: 66},
                "dead": {c: 2, f: 7, F: 66}
         };
-        this.state = "dormant";
+        this.state = this.states["dormant"];
 
         this.updates = [];
-        this.update = prototype.update;
-        this.place = prototype.place;
-        this.draw = prototype.draw;
+        this.update = prototype.update.bind(this);
+        this.place = prototype.place.bind(this);
+        this.draw = prototype.draw.bind(this);
     };
 });

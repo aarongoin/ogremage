@@ -9,9 +9,9 @@ define(["./entity", "../local/navnet"], function(entity, navnet) {
         proto.speed = init.speed || 1;
         proto.goalPath = [];
 
-        proto.chooseClosest = init.chooseClosest || prototype.chooseClosest;
-        proto.move = init.move || prototype.move;
-        proto.moveTo = init.moveTo || prototype.moveTo;
+        proto.chooseClosest = prototype.chooseClosest.bind(this);
+        proto.move = prototype.move.bind(this);
+        proto.moveTo = prototype.moveTo.bind(this);
         proto.updates.push(prototype.update);
 
         return proto;

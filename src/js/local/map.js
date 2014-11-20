@@ -56,7 +56,7 @@ function(marray, flags) {
     };
 
     map.tileOpen = function(x, y) {
-        return this.data[x][y].occupied ? this.data[x][y] : false;
+        return this.data[x][y].occupied ? false : this.data[x][y];
     };
 
     map.cycleOpen = function(callback) {

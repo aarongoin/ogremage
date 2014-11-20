@@ -87,12 +87,11 @@ define(["./canvas", "../util/loop", "../util/colorwheel", "../util/sma"], functi
          * @param  {number} flag draw type flags
          */
         needRedraw = function(x, y, flag) {
-            var i = redraw.length, t, draw = true;
+            var i = redraw.length, tile, draw = true;
             while (i--) {
-                t = redraw[i];
-                if ((x === t[0]) && (y === t[1])) {
-                    t[3] |= flag;
-                    console.log("found: " + t[3]);
+                tile = redraw[i];
+                if ((x === tile[0]) && (y === tile[1])) {
+                    tile[3] |= flag;
                     draw = false;
                     break;
                 }
