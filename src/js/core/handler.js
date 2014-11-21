@@ -5,14 +5,12 @@ define(function() {
         inactive;
 
     handle = function(gesture) {
-        console.log("handle: handling...");
         var type;
         if (active) {
             type = "t" + gesture.length + gesture.recognized;
             gesture.type = type;
-            console.log("handle: gesture type: " + type);
             handle.gesture = gesture;
-            if (handle[type]) handle[type](gesture);
+            if (gestures[type]) gestures[type](gesture);
         } else if (inactive) inactive(gesture);
     };
 
@@ -22,7 +20,7 @@ define(function() {
     };
 
     handle.set = function(gesture, callback) {
-        if (handle[gesture] && (typeof callback === "function")) handle[gesture] = callback;
+        if (gestures[gesture] && (typeof callback === "function")) gestures[gesture] = callback;
     };
 
     handle.start = function() { active = true; };

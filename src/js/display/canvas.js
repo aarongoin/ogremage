@@ -1,5 +1,5 @@
 define(function(){
-    console.log("prep: canvas");
+    console.log("canvas: init module");
     var c = {},
         canvas = document.getElementById('canvas'),
         context = canvas.getContext("2d"),
@@ -12,9 +12,9 @@ define(function(){
     context.fillStyle = "#000";
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-    console.log("      width: " + canvas.width);
-    console.log("      height: " + canvas.height);
-    console.log("      ratio: " + ratio);
+    console.log("canvas: width: " + canvas.width);
+    console.log("canvas: height: " + canvas.height);
+    console.log("canvas: ratio: " + ratio);
 
     window.addEventListener("resize", function(event) {
         c.resize();

@@ -20,7 +20,7 @@ function(display, loop, handle, local, clock, menu, player) {
             */
             
             // set default handlers
-            //handle.set("t1Tap", player.moveTo);
+            handle.set("t1Tap", player.moveTo);
             //handle.set("t1Hold", player.Act);
             //handle.set("t1Double", player.moveToAndAct);
 
@@ -57,7 +57,13 @@ function(display, loop, handle, local, clock, menu, player) {
         console.log("game: starting");
         local.init({
             // where to place player
-            player: { x: 0, y: 0 },
+            player: {
+                states: {
+                 "active": {c: 2, f: 7, F: 66},
+                "dormant": {c: 2, f: 7, F: 66},
+                   "dead": {c: 2, f: 7, F: 66}
+                }
+            },
 
             // how to color the map as well as environmental effects
             scene: {

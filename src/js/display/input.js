@@ -75,7 +75,7 @@ define(["./console", "../core/handler"], function(con, han) {
             t.dt = t.end - t.start;
 
             t.distance = Math.sqrt( (t.dx * t.dx) + (t.dy * t.dy) );
-            t.speed = t.dis / t.dt;
+            t.speed = t.distance / t.dt;
 
             // summing touch values for calculating gesture averages
             gesture.tileX += t.tileX;
@@ -92,9 +92,10 @@ define(["./console", "../core/handler"], function(con, han) {
         gesture.distance /= len;
         gesture.dt /= len;
 
-        gesture.speed = gesture.distance / gesture.dt;
+        gesture.speed = (gesture.distance / gesture.dt) * 1000;
+        console.log("gesture speed: " + gesture.speed);
 
-        if (!mouse || (mouse && moved.recognized === "simple")) {
+        if (!mouse || (mouse && moved.recognized === "Simple")) {
             gesture.recognized = (gesture.speed > 50) ? "Swipe" : "Drag";
         } else {
             gesture.recognized = moved.recognized;
@@ -122,7 +123,7 @@ define(["./console", "../core/handler"], function(con, han) {
         gesture.speed = 0;
         gesture.dt = 0;
 
-        i = len;
+        i = len = removed.length;
         while (i--) {
             g = {};
             t = removed[i];
@@ -131,7 +132,7 @@ define(["./console", "../core/handler"], function(con, han) {
             g.dy = t.tileY - t.tileY0;
             g.dt = t.end - t.start;
 
-            g.distance = Math.sqrt( square(g.dx) + square(g.dy) );
+            g.distance = Math.sqrt( (g.dx * g.dx) + (g.dy * g.dy) );
             g.speed = g.dis / g.dt;
 
             // summing touch values for calculating gesture averages
@@ -149,11 +150,11 @@ define(["./console", "../core/handler"], function(con, han) {
         gesture.distance /= len;
         gesture.dt /= len;
 
-        gesture.speed = gesture.distance / gesture.dt;
+        gesture.speed = (gesture.distance / gesture.dt) * 1000;
 
         // detect touch type
         // TODO - recognize pinch and rotate gestures along with directionality for non-mouse gestures
-        if (!mouse || (mouse && moved.recognized === "simple")) {
+        if (!mouse || (mouse && gesture.recognized === "Simple")) {
             if (gesture.distance < 50) {
                 if (gesture.dt > 1000) {
                     gesture.recognized = "Hold";
@@ -324,6 +325,7 @@ define(["./console", "../core/handler"], function(con, han) {
      */
     var mouseMove = function(event) {
         var t, i = current.length;
+        event.preventDefault();
         // ignore mouse movement if the user isn't clicking
         if (i) {
             // update each touches x and y tile coordinates
@@ -344,6 +346,7 @@ define(["./console", "../core/handler"], function(con, han) {
     var mouseUp = function(event) {
         var t, i = current.length,
             removed;
+        event.preventDefault();
         // ignore mouseup if the user isn't clicking one of first 3 buttons
         if (i) {
             // update each touches x and y tile coordinates and get time touch ended
@@ -356,7 +359,7 @@ define(["./console", "../core/handler"], function(con, han) {
             }
             removed = current;
             current = [];
-            gestureMove(removed, true);
+            gestureEnd(removed, true);
         }
     };
 

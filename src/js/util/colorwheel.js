@@ -1,12 +1,35 @@
 define(["./random"], function(rand) {
-    console.log("prep: colorwheel");
-    var colors = [  '#000000', '#333333', '#666666',  /* grayscale dark  */
-                    '#999999', '#cccccc', '#ffffff',  /* grayscale light */
-                    '#b21f35', '#d82735', '#ff7435',  /* red/orange      */
-                    '#ffa135', '#ffcb35', '#fff735',  /* orange/yellow   */
-                    '#00753a', '#009e47', '#16dd36',  /* green           */
-                    '#0052a5', '#0079e7', '#06a9fc',  /* blue            */
-                    '#681e7e', '#7d3cb5', '#bd7af6']; /* purple          */
+    console.log("colorwheel: init module");
+    var colors = [
+        /* grayscale dark  */
+        '#000000', // 0 - black
+        '#333333', // 1
+        '#666666', // 2
+        /* grayscale light */
+        '#999999', // 3
+        '#cccccc', // 4
+        '#ffffff', // 5
+        /* red/orange      */
+        '#b21f35', // 6
+        '#d82735', // 7
+        '#ff7435', // 8
+        /* orange/yellow   */
+        '#ffa135', // 9
+        '#ffcb35', // 10
+        '#fff735', // 11
+        /* green           */
+        '#00753a', // 12
+        '#009e47', // 13
+        '#16dd36', // 14
+        /* blue            */
+        '#0052a5', // 15
+        '#0079e7', // 16
+        '#06a9fc', // 17
+        /* purple          */
+        '#681e7e', // 18
+        '#7d3cb5', // 19
+        '#bd7af6'  // 20
+    ];
 
     return {
         /**
@@ -14,19 +37,19 @@ define(["./random"], function(rand) {
          * @return {[type]} [description]
          */
         random: function() {
-            return colors[rand.lfsr(0, colors.length)];
+            return colors[rand.simple(0, colors.length)];
         },
 
         randi: function() {
-            return rand.lfsr(0, colors.length);
+            return rand.simple(0, 20);
         },
 
         gray: function(dark) {
-            return rand.lfsr(0, 3);
+            return rand.simple(0, 3);
         },
 
         color: function() {
-            return rand.lfsr(6, colors.length);
+            return rand.simple(6, colors.length);
         },
 
         any: function() {

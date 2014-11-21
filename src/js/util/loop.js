@@ -16,12 +16,12 @@ define(function() {
             }()),
 
             async = function(callback) {
-                console.log("adding async callback");
+                console.log("loop: adding async callback");
                 timeout.push(callback);
             },
 
             block = function(callback) {
-                console.log("adding callback to loop");
+                console.log("loop: adding callback to loop");
                 callbacks.push(callback);
             },
 

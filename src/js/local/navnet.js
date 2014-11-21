@@ -1,4 +1,4 @@
-define(["./map"], function(map) {
+define(["./map", "../util/colorwheel"], function(map, color) {
     var navnet = {data: []},
         mapSpace,
         expandDiagonal,
@@ -9,26 +9,31 @@ define(["./map"], function(map) {
     // TODO - guard against spaces becoming too large
 
     expandDiagonal = function(space) {
-        var M = space.xM,
+        var X = space.xM,
             x = space.xm,
             y = space.ym,
             expand = {left: true, up: true},
-            corner, clear;
+            corner, clear, i;
+
+        // set first because we already know it is open
+        map.data[x][y].space = space;
+        map.data[x][y].f = space.f;
 
         // initial corner tile set
-        corner = map.tileOpen(M, space.yM);
+        corner = map.tileOpen(--x, --y);
         while (corner) {
             // this loop is checking for barriers to expansion
-            i = M - x;
+            i = X - x; // distance between current point and original
+            if (i > 4) break;
             clear = true;
             while (i) {
                 // check a top tile
-                if (!map.tileOpen(x + i, y)) { // top blocked
+                if (!map.tileOpen(x, y + i) || map.data[x][y + i].space) { // top blocked
                     clear = false;
                     expand.up = false; // expand left
                     break;
                 // check a left tile
-                } else if (!map.tileOpen(x, y + i)) { // left blocked
+                } else if (!map.tileOpen(x + i, y)  || map.data[x + i][y].space) { // left blocked
                     clear = false;
                     expand.left = false; // expand up
                     break;
@@ -39,74 +44,91 @@ define(["./map"], function(map) {
             if (clear) { // all clear
                 // loop expanding tiles and set their space
                 corner.space = space;
-                i = M - x;
+                corner.f = space.f;
+                i = X - x;
                 while (i) {
                     map.data[x + i][y].space = space;
                     map.data[x][y + i].space = space;
+                    map.data[x + i][y].f = space.f;
+                    map.data[x][y + i].f = space.f;
                     i--;
                 }
-                space.xm = --x;
-                space.ym = --y;
-                corner = map.tileOpen(x, y);
+
+                // set new min x and y coords
+                space.xm = x;
+                space.ym = y;
+
+                // check next corner
+                corner = map.tileOpen(--x, --y);
             } else break; // there's a barrier
         }
         return expand;
     };
 
     expandUp = function(space) {
-        var M = space.xM,
-            x = space.xm,
+        var X = space.xM,
+            Y = space.yM - space.ym + 1,
+            x = space.xm - 1,
             y = space.ym,
             clear, i;
 
+            y--;
+            clear = true;
             while (true) {
                 // check expanding edge line
-                i = M - x;
-                while (i) {
-                    if (!map.tileOpen(x + i, y)) {
+                i = X - x;
+                if ((i + Y) > 8) break;
+                do {
+                    if (!map.tileOpen(x + i, y) || map.data[x + i][y].space) {
                         clear = false;
                         break;
                     }
                     i--;
-                }
+                } while (i);
 
                 // are we clear to expand?
                 if (clear) { // all clear
-                    i = M - x;
-                    while (i) {
+                    i = X - x;
+                    do {
                         map.data[x + i][y].space = space;
+                        map.data[x + i][y].f = space.f;
                         i--;
-                    }
-                    space.ym = --y;
+                    } while (i);
+                    space.ym = y--;
                 } else break;
             }
     };
 
     expandLeft = function(space) {
-        var M = space.yM,
+        var Y = space.yM,
+            X = space.xM - space.xm + 1,
             x = space.xm,
             y = space.ym,
             clear, i;
 
+
+            clear = true;
             while (true) {
                 // check expanding edge line
-                i = M - y;
-                while (i) {
-                    if (!map.tileOpen(x, y + i)) {
+                i = Y - y;
+                if ((i + X) > 8) break;
+                do {
+                    if (!map.tileOpen(x, y + i) || map.data[x][y + i].space) {
                         clear = false;
                         break;
                     }
                     i--;
-                }
+                } while (i);
 
                 // are we clear to expand?
                 if (clear) { // all clear
-                    i = M - y;
-                    while (i) {
+                    i = Y - y;
+                    do {
                         map.data[x][y + i].space = space;
+                        map.data[x][y + i].f = space.f;
                         i--;
-                    }
-                    space.xm = --x;
+                    } while (i);
+                    space.xm = x--;
                 } else break;
             }
     };
@@ -153,7 +175,8 @@ define(["./map"], function(map) {
                 x: null, y: null, // center coordinates of space
                 xM: x, yM: y, // max x and y
                 xm: x, ym: y, // min x and y
-                edges: []
+                edges: [],
+                f: color.color()
             },
             expand;
 
@@ -171,6 +194,8 @@ define(["./map"], function(map) {
         // connect space to any spaces bordering on the bottom and right
         connect(space);
 
+        map.data[space.x][space.y].f = 5;
+        //console.log("navnet: space: " + space.xm + "," + space.ym + " -> " + space.x + "," + space.y + " <- " + space.xM + "," + space.yM);
         navnet.data.push(space);
     };
 

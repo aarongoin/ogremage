@@ -1,5 +1,5 @@
 define(["./canvas", "../util/loop", "../util/colorwheel", "../util/sma"], function(canvas, lupe, color, sma) {
-    console.log("prep: console");
+    console.log("console: init module");
     var c = {},
         redraw = [], // tiles that need redrawn [x, y, draw flag]
         ctx = canvas.ctx(), // canvas context
@@ -10,8 +10,8 @@ define(["./canvas", "../util/loop", "../util/colorwheel", "../util/sma"], functi
         mx, // top margin (letterboxing) in pixels
         my, // left margin (letterboxing) in pixels
 
-        fps = document.getElementById('fps'),
-        avg = sma(180), // initialize our simple moving average calculator
+        //fps = document.getElementById('fps'),
+        //avg = sma(180), // initialize our simple moving average calculator
 
 
         /**
@@ -65,13 +65,13 @@ define(["./canvas", "../util/loop", "../util/colorwheel", "../util/sma"], functi
                 blit(tiles[c[0]][c[1]], c[2]); // use coords to blit correct tile
             }
 
-            fps.innerHTML = "FPS: " + (1000 / avg(Date.now() - t) >> 0);
+            //fps.innerHTML = "FPS: " + (1000 / avg(Date.now() - t) >> 0);
         },
 
         forceDraw = function() {
             var x = width,
                 y;
-            console.log("console force draw");
+            console.log("console: force draw");
             while (x--) {
                 y = height;
                 while (y--) {
@@ -100,7 +100,7 @@ define(["./canvas", "../util/loop", "../util/colorwheel", "../util/sma"], functi
         };
 
     sprites.addEventListener("load", function() {
-        console.log("console ready");
+        console.log("console: ready");
         forceDraw();
         c.ready();
     }, false);
@@ -190,11 +190,11 @@ define(["./canvas", "../util/loop", "../util/colorwheel", "../util/sma"], functi
     };
 
     c.init = function(sprite_src, char_px, ready) {
-        console.log("init: console");
+        console.log("console: init");
 
         c.ready = ready || c.ready;
 
-        console.log("sprites src: " + sprite_src + " pixels: " + char_px);
+        console.log("console: sprites src: " + sprite_src + " pixels: " + char_px);
         var w = canvas.width,
             h = canvas.height,
             x, y, i, j;
@@ -205,14 +205,13 @@ define(["./canvas", "../util/loop", "../util/colorwheel", "../util/sma"], functi
         c.pixel = char_px; // number of pixels wide/tall a tile is
         c.resize(w, h);
 
-        console.log("tiles wide: " + width + " tall: " + height);
-        console.log("x margin: " + mx + " y margin: " + my);
+        console.log("console: tiles wide: " + width + " tall: " + height);
 
         // fill canvas black ( sets up letterboxing)
         ctx.fillStyle = "#000";
         ctx.fillRect(0, 0, w, h);
 
-        console.log("creating " + (width * height) + " tiles");
+        console.log("console: creating " + (width * height) + " tiles");
         // initialize tiles
         x = mx;
         for (i = 0; i < width; i++) {

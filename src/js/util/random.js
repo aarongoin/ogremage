@@ -1,5 +1,5 @@
 define(function(){
-    console.log("prep: random");
+    console.log("random: init module");
     var last,
         max = Math.pow(2, 16),
         out, seed;
@@ -8,8 +8,8 @@ define(function(){
 
     var lfsr = function() {
         var bit;
-        bit  = ((out >> 0) ^ (out >> 2) ^ (out >> 3) ^ (out >> 5)) & 1;
-        out =  (out >> 1) | (bit << 15);
+        bit = ((out >> 0) ^ (out >> 2) ^ (out >> 3) ^ (out >> 5)) & 1;
+        out = (out >> 1) | (bit << 15);
         return out / max;
     };
 
@@ -34,7 +34,7 @@ define(function(){
         },
 
         simple: function(low, high) {
-            return (Math.random() * high + low) >> 0;
+            return (Math.random() * (high - low) + low) >> 0;
         },
 
         lfsr: function(low, high) {

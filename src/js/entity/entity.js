@@ -1,5 +1,10 @@
 define(["../local/map", "../local/flags", "../display/console"], function(map, flags, con) {
     var prototype = {
+        init: function(init) {
+            for (var property in init) {
+                if (init.hasOwnProperty(property)) this[property] = init[property];
+            }
+        },
         place: function(x, y) {
             var open,
                 tile = map.tileOpen(x, y);
@@ -24,7 +29,6 @@ define(["../local/map", "../local/flags", "../display/console"], function(map, f
         },
 
         draw: function() {
-            console.log("entity: draw");
             con.swap(this.x, this.y, this.state);
         }
 
@@ -49,14 +53,15 @@ define(["../local/map", "../local/flags", "../display/console"], function(map, f
         // at energy = 0, the entity is dead
         this.energy = init.energy || 1;
         this.states = init.states || {
-             "active": {c: 2, f: 7, F: 66},
-            "dormant": {c: 2, f: 7, F: 66},
-               "dead": {c: 2, f: 7, F: 66}
+             "active": {c: 1, f: 7, F: 66},
+            "dormant": {c: 1, f: 7, F: 66},
+               "dead": {c: 1, f: 7, F: 66}
         };
         this.state = this.states["dormant"];
 
         this.updates = [];
         this.update = prototype.update.bind(this);
+        this.init = prototype.init.bind(this);
         this.place = prototype.place.bind(this);
         this.draw = prototype.draw.bind(this);
     };

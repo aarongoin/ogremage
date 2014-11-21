@@ -1,6 +1,13 @@
-define(["../util/marray", "./flags"],
-function(marray, flags) {
+define(["../util/marray", "./flags", "../util/random"],
+function(marray, flags, rand) {
     var map = {data: null};
+
+    map.initWall = function(x, y, c, f) {
+        this.data[x][y].c = c;
+        this.data[x][y].f = f;
+        this.data[x][y].F |= flags.ISWALL;
+        this.data[x][y].occupied = true;
+    };
 
     map.init = function(init) {
         var x, y, c, f,
@@ -21,7 +28,6 @@ function(marray, flags) {
             };
         });
 
-        console.log("" + this.data[0][0].F);
         this.width = w;
         this.height = h;
 
@@ -35,22 +41,22 @@ function(marray, flags) {
             w--;
             h--;
             while (x <= w) {
-                this.data[x][0].c = c;
-                this.data[x][0].f = f;
-                this.data[x][0].F |= flags.ISWALL;
-                this.data[x][h].c = c;
-                this.data[x][h].f = f;
-                this.data[x][h].F |= flags.ISWALL;
+                this.initWall(x, 0, c, f);
+                this.initWall(x, h, c, f);
                 x++;
             }
             while (y <= h) {
-                this.data[0][y].c = c;
-                this.data[0][y].f = f;
-                this.data[0][y].F |= flags.ISWALL;
-                this.data[w][y].c = c;
-                this.data[w][y].f = f;
-                this.data[w][y].F |= flags.ISWALL;
+                this.initWall(0, y, c, f);
+                this.initWall(w, y, c, f);
                 y++;
+            }
+
+            // fill map with an additional 10% walls random placed
+            w = init.width;
+            h = init.height;
+            x = ((w * h) / 10) >> 0;
+            while(x--) {
+                this.initWall( rand.simple(0, w), rand.lfsr(0, h), c ,f);
             }
         }
     };
@@ -66,6 +72,7 @@ function(marray, flags) {
         while (w--) {
             h = this.height;
             while (h--) {
+                //console.log("map: cycle: " + w + "," + h);
                 node = this.data[w][h];
                 if (!node.occupied) callback(w, h, node);
             }
