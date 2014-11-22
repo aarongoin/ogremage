@@ -1,4 +1,4 @@
-define(["./entity", "../local/navnet"], function(entity, navnet) {
+define(["./entity", "../local/map"], function(entity, map) {
     var constructor, prototype;
 
     constructor = function(proto, init) {
@@ -7,12 +7,12 @@ define(["./entity", "../local/navnet"], function(entity, navnet) {
         proto.isMobile = true;
 
         proto.speed = init.speed || 1;
-        proto.goalPath = [];
+        proto.destination = init.destination || null;
 
-        proto.chooseClosest = prototype.chooseClosest.bind(this);
-        proto.move = prototype.move.bind(this);
-        proto.moveTo = prototype.moveTo.bind(this);
-        proto.updates.push(prototype.update);
+        proto.chooseClosest = prototype.chooseClosest.bind(proto);
+        proto.move = prototype.move.bind(proto);
+        proto.moveTo = prototype.moveTo.bind(proto);
+        proto.updates.push(prototype.update.bind(proto));
 
         return proto;
     };
@@ -23,21 +23,21 @@ define(["./entity", "../local/navnet"], function(entity, navnet) {
          * @param  {Array} stuff objects to choose closest from. Objects must have "x" and "y" tile coordinates
          * @return {Object}      Return closest object of those passed in
          */
-        chooseClosest: function(stuff) {
-            var distOld, distNew, closest = false;
+        chooseClosest: function(x, y, stuff) {
+            var distOld, distNew, closest = false,
                 i = stuff.length;
 
             while (i--) {
                 // check for closest tile found so far
                 if (closest) {
                     // set current tile as closest if it so
-                    distNew = Math.abs(stuff[i].x - this.x) + Math.abs(stuff[i].y - this.y);
+                    distNew = Math.abs(stuff[i].x - x) + Math.abs(stuff[i].y - y);
                     closest = (distNew > distOld) ? closest : stuff[i];
-                    distOld = distNew;
+                    distOld = (distNew > distOld) ? distOld : distNew;
                 } else {
                     // set first tile in array as the closest tile found so far
                     closest = stuff[i];
-                    distOld = Math.abs(stuff[i].x - this.x) + Math.abs(stuff[i].y - this.y);
+                    distOld = Math.abs(stuff[i].x - x) + Math.abs(stuff[i].y - y);
                 }
             }
 
@@ -45,10 +45,10 @@ define(["./entity", "../local/navnet"], function(entity, navnet) {
         },
 
         move: function(x, y) {
-            var t = this.map.tileOpen(x, y);
+            var t = map.tileOpen(x, y);
             if (t) {
-                this.map.Occupy(t, this, this.flags);
-                this.map.Unoccupy(this.x, this.y, this.flags);
+                map.Occupy(t, this, this.state);
+                map.Unoccupy(this.x, this.y, this.state);
                 this.x = x;
                 this.y = y;
                 return true;
@@ -62,53 +62,28 @@ define(["./entity", "../local/navnet"], function(entity, navnet) {
          * @return {Boolean}   true if successful, false if not
          */
         moveTo: function(x, y) {
-            var goal = this.goalPath[this.goalPath.length - 1];
-
-            // check that either no goal exists or the new one is different
-            if (!goal || (goal.x !== x) || (goal.y !== y)) {
-                // get the open tile
-                goal = this.map.tileOpen(x, y);
-                if (goal) { // success! the tile was open and is a valid goal
-                    // get the jump point search navnet
-                    this.goalPath = navnet(x, y, this.x, this.y);
-                    return true;
-                } else { // the tile is not a valid goal
-                    // get the surrounding open8
-                    goal = this.map.open8(x, y);
-                    // are there any open border tiles
-                    if (goal) {
-                        // get closest tile of those passed
-                        goal = this.chooseClosest(goal);
-                        // if a closest tile was returned, get the jump point search navnet
-                        if (goal) {
-                            this.goalPath = navnet(this.x, this.y, x, y);
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                }
-            } else {
-                return false;
-            }
+            this.destination = map.data[x][y];
         },
         /**
          * update!
          * @param  {array} array of bordering tiles
          */
         update: function(borders) {
-            var i = borders.length,
-                p = this.goalPath[0];
-            borders = borders || this.map.border8();
+            var i, x, y;
+            borders = borders || map.border8(this.x, this.y);
 
-            while (i--) {
-                if (p && (p.x === borders[i].x) && (p.y === borders[i].y) &&
-                    (p.type === "move") && (this.agency >= (p.cost / this.speed))) {
-                    if (!borders.occupied) {
-                        this.move(p.x, p.y);
-                        this.goalPath.shift();
+            if (this.state.t === "active") {
+                if (this.destination) {
+                    x = this.destination.x;
+                    y = this.destination.y;
+                    i = borders.indexOf(this.destination);
+                    if (i !== -1) {
+                        this.move(x, y);
+                        this.destination = false;
                     } else {
-                        // TODO - handle rerouting because target tile is blocked
+                        // move to open8 tile closest to destination
+                        i = this.chooseClosest(x, y, map.open8(this.x, this.y));
+                        this.move(i.x, i.y);
                     }
                 }
             }

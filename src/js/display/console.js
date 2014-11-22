@@ -38,12 +38,9 @@ define(["./canvas", "../util/loop", "../util/colorwheel", "../util/sma"], functi
                 ctx.globalCompositeOperation = 'destination-over';
             }
 
-            // draw background?
-            if (flag & 4) {
-                // background color
-                ctx.fillStyle = (flag & 16) ? tile.b : color.at(tile.b);
-                ctx.fillRect(x, y, p, p);
-            }
+            // background color
+            ctx.fillStyle = (flag & 16) ? tile.b : color.at(tile.b);
+            ctx.fillRect(x, y, p, p);
 
             if (flag & 8) {
                 ctx.globalCompositeOperation = 'source-over';

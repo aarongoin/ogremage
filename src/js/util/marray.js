@@ -6,13 +6,14 @@ define(function() {
      * @param  {function} factory what to init every cell to
      * @return {Array}      returns newly initialized array
      */
-    return function(x, y, factory) {
-        var i, a = [];
-        while (x--) {
-            i = y;
+    return function(w, h, factory) {
+        var x, y, a = [];
+        x = -1;
+        while (x++ < w) {
+            y = -1;
             a.push([]);
-            while (i--) {
-                a[a.length - 1].push(factory());
+            while (y++ < h) {
+                a[a.length - 1].push(factory(x, y));
             }
         }
         return a;

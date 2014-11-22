@@ -26,8 +26,9 @@ define(["./console", "../core/handler"], function(con, han) {
      * @return {object}       returns modified touch object
      */
     var touchTile = function(touch) {
-        touch.tileX = Math.round(touch.screenX / con.pixel);
-        touch.tileY = Math.round(touch.screenY / con.pixel);
+        //console.log("touch: " + touch.clientX + "," + touch.clientY + " w/ pixel: " + con.pixel);
+        touch.tileX = (touch.clientX / con.pixel) >> 0;
+        touch.tileY = (touch.clientY / con.pixel) >> 0;
         return touch;
     };
 
@@ -283,8 +284,8 @@ define(["./console", "../core/handler"], function(con, han) {
         touch = {
               start: Date.now(),
                  id: event.which,
-            screenX: event.screenX,
-            screenY: event.screenY
+            clientX: event.clientX,
+            clientY: event.clientY
         };
 
         // set touch x and y tile coords
@@ -331,8 +332,8 @@ define(["./console", "../core/handler"], function(con, han) {
             // update each touches x and y tile coordinates
             while (i--) {
                 t = current[i];
-                t.screenX = event.screenX;
-                t.screenY = event.screenY;
+                t.clientX = event.clientX;
+                t.clientY = event.clientY;
                 touchTile(t);
             }
             gestureMove(current, true);
@@ -353,8 +354,8 @@ define(["./console", "../core/handler"], function(con, han) {
             while (i--) {
                 t = current[i];
                 t.end = Date.now();
-                t.screenX = event.screenX;
-                t.screenY = event.screenY;
+                t.clientX = event.clientX;
+                t.clientY = event.clientY;
                 touchTile(t);
             }
             removed = current;

@@ -11,6 +11,7 @@ define(["../local/map", "../local/flags", "../display/console"], function(map, f
             if (tile) {
                 this.x = x;
                 this.y = y;
+                map.Occupy(tile, this, this.state.F);
                 return true;
             }
 
@@ -24,12 +25,19 @@ define(["../local/map", "../local/flags", "../display/console"], function(map, f
 
         update: function(energy) {
             var i = this.updates.length;
-            //while (i--) this.updates[i](energy);
+            this.energy += energy;
+            while (i--) this.updates[i]( map.border8(this.x, this.y) );
             this.draw();
         },
 
         draw: function() {
             con.swap(this.x, this.y, this.state);
+        },
+
+        distance: function(x, y, a, b) {
+            var dx = Math.abs(x - a),
+                dy = Math.abs(y - b);
+            return (dx > dy) ? dx : dy;
         }
 
     };
@@ -43,7 +51,6 @@ define(["../local/map", "../local/flags", "../display/console"], function(map, f
         this.title = init.title || "Entity";
         this.name = init.name || "";
 
-        this.map = map;
         this.flags = flags;
 
         this.x = init.x || 5;
@@ -53,9 +60,9 @@ define(["../local/map", "../local/flags", "../display/console"], function(map, f
         // at energy = 0, the entity is dead
         this.energy = init.energy || 1;
         this.states = init.states || {
-             "active": {c: 1, f: 7, F: 66},
-            "dormant": {c: 1, f: 7, F: 66},
-               "dead": {c: 1, f: 7, F: 66}
+             "active": {t: "active", c: 1, f: 7, F: 66},
+            "dormant": {t: "dormant", c: 1, f: 7, F: 66},
+               "dead": {t: "dead", c: 1, f: 7, F: 66}
         };
         this.state = this.states["dormant"];
 
@@ -64,5 +71,6 @@ define(["../local/map", "../local/flags", "../display/console"], function(map, f
         this.init = prototype.init.bind(this);
         this.place = prototype.place.bind(this);
         this.draw = prototype.draw.bind(this);
+        this.distance = prototype.distance.bind(this);
     };
 });

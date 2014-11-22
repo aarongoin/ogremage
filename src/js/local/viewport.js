@@ -121,12 +121,16 @@ function(map, flags, con) {
             map_y,
             tile;
 
+        console.log("viewport: drawing");
+
         while (con_x--) {
             map_y = bottom;
             con_y = height;
             while (con_y--) {
                 tile = map.data[map_x][map_y];
-                if ((tile.F & flags.INPCLOS) ||
+                if (fov === "full") {
+                    con.swap(con_x, con_y, tile);
+                } else if ((tile.F & flags.INPCLOS) ||
                     ((fov !== 'los') && (tile.F & flags.MAPPED))) {
                     con.swap(con_x, con_y, tile);
                 }

@@ -95,6 +95,7 @@ define(["./map", "../util/colorwheel"], function(map, color) {
                         i--;
                     } while (i);
                     space.ym = y--;
+                    Y++;
                 } else break;
             }
     };
@@ -129,6 +130,7 @@ define(["./map", "../util/colorwheel"], function(map, color) {
                         i--;
                     } while (i);
                     space.xm = x--;
+                    X++;
                 } else break;
             }
     };

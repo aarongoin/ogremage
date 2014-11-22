@@ -59,9 +59,9 @@ function(display, loop, handle, local, clock, menu, player) {
             // where to place player
             player: {
                 states: {
-                 "active": {c: 2, f: 7, F: 66},
-                "dormant": {c: 2, f: 7, F: 66},
-                   "dead": {c: 2, f: 7, F: 66}
+                 "active": {t: "active", c: 2, f: 7, F: 66},
+                "dormant": {t: "dormant", c: 2, f: 7, F: 66},
+                   "dead": {t: "dead", c: 2, f: 7, F: 66}
                 }
             },
 

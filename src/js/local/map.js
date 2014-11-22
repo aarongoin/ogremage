@@ -16,8 +16,10 @@ function(marray, flags, rand) {
 
         console.log("map: init");
 
-        this.data = marray(w, h, function() {
+        this.data = marray(w, h, function(x, y) {
             return {
+                       x: x,
+                       y: y,
                        c: init.floor.c,
                        f: init.floor.f,
                        b: 0,
@@ -75,6 +77,18 @@ function(marray, flags, rand) {
                 //console.log("map: cycle: " + w + "," + h);
                 node = this.data[w][h];
                 if (!node.occupied) callback(w, h, node);
+            }
+        }
+    };
+
+    map.cycleAll = function(callback) {
+        var w, h;
+
+        w = this.width;
+        while (w--) {
+            h = this.height;
+            while (h--) {
+                callback(w, h, this.data[w][h]);
             }
         }
     };
