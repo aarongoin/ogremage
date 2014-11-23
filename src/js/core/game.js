@@ -78,8 +78,8 @@ function(display, loop, handle, local, clock, menu, player) {
                   type: "arena",
                  width: display.width(),
                 height: display.height(),
-                  wall: {c: 35, f: 2, b: 0},
-                 floor: {c: 46, f: 4, b: 0}
+                  wall: {c: 35, f: 3, b: 0},
+                 floor: {c: 46, f: 1, b: 0}
             }
         });
         handle.start();

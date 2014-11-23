@@ -6,11 +6,12 @@ define(["./entity", "../local/map"], function(entity, map) {
 
         proto.isMobile = true;
 
-        proto.speed = init.speed || 1;
+        proto.speed = init.speed || 0.75;
         proto.destination = init.destination || null;
 
         proto.chooseClosest = prototype.chooseClosest.bind(proto);
         proto.move = prototype.move.bind(proto);
+        proto.canMove = prototype.canMove.bind(proto);
         proto.moveTo = prototype.moveTo.bind(proto);
         proto.updates.push(prototype.update.bind(proto));
 
@@ -31,17 +32,24 @@ define(["./entity", "../local/map"], function(entity, map) {
                 // check for closest tile found so far
                 if (closest) {
                     // set current tile as closest if it so
-                    distNew = Math.abs(stuff[i].x - x) + Math.abs(stuff[i].y - y);
-                    closest = (distNew > distOld) ? closest : stuff[i];
-                    distOld = (distNew > distOld) ? distOld : distNew;
+                    distNew = this.distance(stuff[i].x, stuff[i].y, x, y);
+                    if (distNew < distOld) {
+                        closest = stuff[i];
+                        distOld = distNew;
+                    }
                 } else {
                     // set first tile in array as the closest tile found so far
                     closest = stuff[i];
-                    distOld = Math.abs(stuff[i].x - x) + Math.abs(stuff[i].y - y);
+                    distOld = this.distance(stuff[i].x, stuff[i].y, x, y);
                 }
             }
 
             return closest;
+        },
+
+        canMove: function() {
+            // energy * speed / cost-to-move
+            return ((this.energy * this.speed / 1) >= 1) ? true : false;
         },
 
         move: function(x, y) {
@@ -71,9 +79,9 @@ define(["./entity", "../local/map"], function(entity, map) {
         update: function(borders) {
             var i, x, y;
             borders = borders || map.border8(this.x, this.y);
-
+            //console.log("mobile: energy: " + this.energy);
             if (this.state.t === "active") {
-                if (this.destination) {
+                if (this.destination && this.canMove()) {
                     x = this.destination.x;
                     y = this.destination.y;
                     i = borders.indexOf(this.destination);

@@ -45,7 +45,9 @@ define(function(){
          * get canvas element
          * @return {element} canvas with id="canvas"
          */
-        elem: function(){ return canvas; }
+        elem: function(){ return canvas; },
+
+        //drawLine(x0, y0, x1, y1)
     };
     return c;
 });

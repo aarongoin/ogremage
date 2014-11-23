@@ -169,7 +169,7 @@ function(marray, flags, rand) {
 
         // delete any tiles that are unopen for travel
         i = border.length;
-        while (i--) if (border[i].occupied) border.splice(i+1, 1);
+        while (i--) if (border[i].occupied) border.splice(i, 1);
 
         // if there are open tiles return them, else return false
         return (border.length) ? border : false;
@@ -180,7 +180,7 @@ function(marray, flags, rand) {
 
         // delete all open tiles
         i = border.length;
-        while (i--) if (!border[i].occupied) border.splice(i+1, 1);
+        while (i--) if (!border[i].occupied) border.splice(i, 1);
 
         // if there are closed tiles return them, else return false
         return (border.length) ? border : false;

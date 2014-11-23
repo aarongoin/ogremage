@@ -56,8 +56,6 @@ define(["../local/map", "../local/flags", "../display/console"], function(map, f
         this.x = init.x || 5;
         this.y = init.y || 5;
 
-        // energy is the baseline of life and hitpoints
-        // at energy = 0, the entity is dead
         this.energy = init.energy || 1;
         this.states = init.states || {
              "active": {t: "active", c: 1, f: 7, F: 66},

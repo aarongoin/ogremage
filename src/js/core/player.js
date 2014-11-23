@@ -20,7 +20,7 @@ function(viewport, base, override, clock) {
      * @param  {int} y y-coord
      */
     player.move = override(player.move, function(move, x, y) {
-        var dx = y - this.x,
+        var dx = x - this.x,
             dy = y - this.y;
         if ( move(x, y) ) viewport.draw();
     }.bind(player));

@@ -33,7 +33,7 @@ function(alphanum, canvas, con, color, rand, lupe, game) {
     con.init("./img/sprites30c.png", 30);
     */
    
-    game.init("./img/sprites20c.png", 20);
+    game.init("./img/sprites30c.png", 30);
 
     /*
     var b = document.getElementById('pause');

@@ -5,7 +5,28 @@ define(["./mobile"], function(mobile) {
         init = init || {};
 
         proto.isPrimal = true;
-        proto.updates.push(prototype.update);
+
+        // set up senses (how far entity can see/hear/etc as well as flags for those things)
+        proto.senses = init.senses || {
+            see: 7,
+            smell: 2,
+            hear: 5
+        };
+
+        proto.emotions = init.emotions || {
+            fear: 0,
+            anger: 0,
+            happiness: 0,
+            sadness: 0,
+            threshold: 10
+        };
+
+        proto.attack = prototype.attack.bind(proto);
+
+
+        proto.updates.push(prototype.update.bind(proto));
+
+        return proto;
     };
 
     prototype = {
