@@ -70,7 +70,7 @@ define(["./entity", "../local/map"], function(entity, map) {
          * @return {Boolean}   true if successful, false if not
          */
         moveTo: function(x, y) {
-            this.destination = map.data[x][y];
+            this.destination = ((this.x === x) && (this.y === y)) ? null: map.data[x][y];
         },
         /**
          * update!
@@ -86,7 +86,7 @@ define(["./entity", "../local/map"], function(entity, map) {
                     y = this.destination.y;
                     i = borders.indexOf(this.destination);
                     if (i !== -1) {
-                        this.move(x, y);
+                        if (borders[i].occupied === false) this.move(x, y);
                         this.destination = false;
                     } else {
                         // move to open8 tile closest to destination

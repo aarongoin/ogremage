@@ -43,6 +43,17 @@ function(map, flags, con) {
         else console.log("viewport: invalid FOV type: " + type);
     };
 
+    viewport.shadowCast = function() {
+
+        this.spiral(0, 0, ((width > height) ? width : height), function(dx, dy, r) {
+            // calc angle of tile
+            // if tile open: check angle against shadowlist
+            //         else: get shadow angle and add to shadowlist
+            return true;
+        });
+
+    };
+
     /**
      * update the viewport (called by PC object on move)
      * @param  {number} dx change in player x-coord (+1, 0, or -1)
@@ -137,6 +148,39 @@ function(map, flags, con) {
                 map_y--;
             }
             map_x--;
+        }
+    };
+
+    viewport.spiral = function(x, y, diameter, callback) {
+        var dx = 0,
+            dy = 0,
+            sign = 1,
+            length = 0,
+            i, t;
+        while (length++ <= diameter) {
+            i = 0; // move right (sign = +1) or left (sign = -1)
+            while (i++ < length) {
+                t = x + dx + sign;
+                if (t > right || t < left) {
+                    i = length - i;
+                    length++;
+                    sign = -sign;
+                }
+                dx += sign;
+                if (!callback(dx, dy, Math.sqrt(dx * dx + dy * dy))) return;
+            }
+            i = 0; // move down (sign = +1) or up (sign = -1)
+            while (i++ < length) {
+                t = y + dy + sign;
+                if (t > bottom || t < top) {
+                    i = length - i;
+                    length++;
+                    sign = -sign;
+                }
+                dy += sign;
+                if (!callback(dx, dy, Math.sqrt(dx * dx + dy * dy))) return;
+            }
+            sign = -sign;
         }
     };
 

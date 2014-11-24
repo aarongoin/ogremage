@@ -35,9 +35,14 @@ define(["../local/map", "../local/flags", "../display/console"], function(map, f
         },
 
         distance: function(x, y, a, b) {
+            var dx = x - a,
+                dy = y - b;
+            return Math.sqrt((dx * dx) + (dy * dy));
+            /*
             var dx = Math.abs(x - a),
                 dy = Math.abs(y - b);
             return (dx > dy) ? dx : dy;
+            */
         }
 
     };
@@ -55,6 +60,7 @@ define(["../local/map", "../local/flags", "../display/console"], function(map, f
 
         this.x = init.x || 5;
         this.y = init.y || 5;
+
 
         this.energy = init.energy || 1;
         this.states = init.states || {

@@ -56,7 +56,7 @@ function(marray, flags, rand) {
             // fill map with an additional 10% walls random placed
             w = init.width;
             h = init.height;
-            x = ((w * h) / 10) >> 0;
+            x = ((w * h) / 40) >> 0;
             while(x--) {
                 this.initWall( rand.simple(0, w), rand.lfsr(0, h), c ,f);
             }
