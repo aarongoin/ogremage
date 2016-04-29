@@ -1,0 +1,23 @@
+{
+	type: "Human",
+	name: "Stephen Colbert",
+
+	life: 3000,
+
+	states: {
+		"active": {c: 2, f: '#ffffff'},
+		"dead": {c: 2, f: '#333333'}
+	},
+	state: "active",
+
+	light: {
+		color: '#ffffff',
+		luminosity: 1
+	},
+
+	odor: 1.5,
+
+	speed: 1,
+	sight: 16
+
+}

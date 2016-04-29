@@ -1,0 +1,61 @@
+t1Tap - contextual tap
+t1Hold - move to tile and contextual menu
+t1Drag - guided move
+t1Double - auto-run to tile
+t1Swipe - primary weapon
+
+t2Tap - inventory
+//t2Spread - crowd burst
+//t2Pinch - shield
+
+
+
+HUD
+
+
+
+HUDSpace Layers:
+menus
+player
+mobs
+
+
+
+mr_skeltal (mob player)
+dooty_skeltal (shoot dooty notes at player from a distance)
+rats (group up with other rats and then swarm the player)
+
+
+items:
+torches
+bones
+rags
+horns
+
+
+rags and bones can be combined to create torches
+
+
+
+autogenerate cemeteries.
+
+rows of plots
+each plot rolls for a type of grave:
+#. headstone (1c)
+## monument  (2c)
+### raised vault (ground level coffin with slab lid) (6c)
+###
+... slab vault (underground with at ground level entrance) (6c)
+...
+.. lawn plaque (1c)
+mausoleum (above ground building):
+small, medium, large
+
+flowers *
+crosses +
+candles i
+baubles $
+   junk ~
+
+stephen colbert
+

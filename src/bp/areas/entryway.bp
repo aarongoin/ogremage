@@ -1,0 +1,38 @@
+{
+	id: 'entryway',
+	title: "Bill Murray's Mansion - Entryway",
+
+	width: 50,
+	height: 50,
+	size: 2500,
+
+	fov: "fog",
+	clock: 1,
+
+	base: {
+		wall: { c: 219, f: '#333333', b: '#000000', r: 0.3 },
+		floor: { c: 32, f: '#000000', b: '#999999', r: 1 },
+		exit: { c: 239, f: '#ffffff', b: '#333333', r: 1 }
+	},
+
+	generator: null,
+
+	prefabs: [
+		{
+			x: 0, y: 0,
+			w: 50, h: 50,
+			walls: '50 50 2lkCB1 4oMv 0 36 6On7y 0 6oo 0 6 dcly 0 co rfuus zcg8 pzy x2 1aFjiU QNoc 16c8 2gN3jy 1L148T 0 1Eic 2fGQk 8NAA 3pbBm 4xAdi ianwk 5kk 2lkly3 6BaR 0 6c dCKf6 0 cMM 0 c qoH6 0 oM SuYYo 1HAMo P96 0 M 1HAMo 0 1B6 1aFjiw 1 3iAo 0 36 6Ono0 jiIQo 6oo i76 6 dclO ZAXe co rfuuc 0 pzy 0 o QNoc 0 Ny 1KZXWM 0 1Eic 0 1y 3pbyM 0 3cc 0 2lkCB1 1048575'
+		}
+	],
+
+	exits: [
+		{ to: "leftWing", eID: 1, x: 0, y: 1 },
+		{ to: "rightWing", eID: 1, x: 49, y: 49 }
+	],
+
+	footholds: [
+		{ race: 'Skeleton', population: 50, knowledge: 0 },
+		{ race: 'Rat', population: 150, knowledge: 100 },
+		{ race: 'Human', population: 20, knowledge: 0 }
+	]
+}

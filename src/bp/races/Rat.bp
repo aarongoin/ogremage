@@ -1,0 +1,44 @@
+{
+	type: 'Rat',
+	supertype: 'Beast',
+	avgIQ: 15, 
+
+	growth: 0.08,
+	density: 1,
+	migration: 0.08,
+
+	relations: {
+		Human: -100,
+		Skeleton: 50,
+		Rat: 100
+	},
+
+	makeup: {
+		'Rattus': 1
+	},
+
+	subtypes: {
+		'Rattus': {
+			Entity: {
+				name: 'Rat',
+				life: [3, 4],
+				states: {
+					"active": {c: 114, f: '#663300'},
+					"dead": {c: 114, f: '#333333'}
+				},
+				odor: 2,
+			},
+			Mover: {
+				speed: 0.5
+			},
+			Sensor: {
+				see: 3,
+				hear: 10,
+				smell: 10
+			},
+			Mob: {
+				power: 0.2
+			}
+		}
+	}
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Ogremage",
+  "version": "0.4.0",
+  "description": "roguelike game engine",
+  "scripts": {
+    "build": "cp src/bp/sprites.png build/sprites.png & cp src/index.html build/index.html & npm run build:bp & npm run build:js & npm run build:engine",
+    "build:html": "html-minifier --remove-comments --remove-comments-from-cdata --collapse-whitespace --case-sensitive src/index.html > build/index.html",
+    "build:js": "browserify src/index.js -o build/index.js",
+    "build:engine": "browserify src/engine.js -o build/engine.js",
+    "build:bp": "node packBlueprints.js"
+  },
+  "author": "Aaron Goin",
+  "dependencies": {
+    "browserify": "^9.0.8"
+  }
+}

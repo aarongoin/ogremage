@@ -1,0 +1,33 @@
+{
+	canvas: document.getElementById('canvas'),
+	fullscreen: true,
+	clearBeforeDraw: true,
+	sprites: {
+		count: 256,
+		width: 20,
+		height: 20
+	},
+	colors: [
+		'#000000', // 0
+		'#333333', // 1
+		'#666666', // 2
+		'#999999', // 3
+		'#cccccc', // 4
+		'#ffffff', // 5
+		'#b21f35', // 6
+		'#d82735', // 7
+		'#ff7435', // 8
+		'#ffa135', // 9
+		'#ffcb35', // 10
+		'#fff735', // 11
+		'#00753a', // 12
+		'#009e47', // 13
+		'#16dd36', // 14
+		'#0052a5', // 15
+		'#0079e7', // 16
+		'#06a9fc', // 17
+		'#681e7e', // 18
+		'#7d3cb5', // 19
+		'#bd7af6'  // 20
+	]
+}

@@ -1,0 +1,44 @@
+{
+	type: 'Human',
+	supertype: 'Humanoid',
+	avgIQ: 100,
+
+	growth: 0.08,
+	density: 0.25,
+	migration: 0.25,
+
+	relations: {
+		Human: 100,
+		Skeleton: -100,
+		Rat: -75
+	},
+
+	makeup: {
+		'Average': 1
+	},
+
+	subtypes: {
+		Average: {
+			Entity: {
+				name: 'Joe',
+				life: [10, 12],
+				states: {
+					"active": {c: 2, f: '#ddddaa'},
+					"dead": {c: 2, f: '#333333'}
+				},
+				odor: 1,
+			},
+			Mover: {
+				speed: 1
+			},
+			Sensor: {
+				see: 14,
+				hear: 7,
+				smell: 3
+			},
+			Mob: {
+				power: 4
+			}
+		}
+	}
+}

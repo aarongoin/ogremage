@@ -1,0 +1,68 @@
+{
+	type: 'Skeleton',
+	supertype: 'Undead',
+	avgIQ: 0,
+
+	growth: 0,
+	density: 0.5,
+	migration: 0,
+
+	relations: {
+		Human: -100,
+		Skeleton: 100,
+		Rat: 50
+	},
+
+	makeup: {
+		'Mr. Dooty': 0.1,
+		'Mr. Skeltal': 0.9
+	},
+
+	subtypes: {
+		'Mr. Skeltal': {
+			Entity: {
+				name: 'Mr. Skeltal',
+				life: [10, 12],
+				states: {
+					"active": {c: 83, f: '#cccccc'},
+					"dead": {c: 83, f: '#333333'}
+				},
+				odor: 1,
+				size: 0.9
+			},
+			Mover: {
+				speed: 0.75
+			},
+			Sensor: {
+				see: 10,
+				hear: 0,
+				smell: 0
+			},
+			Mob: {
+				power: [1, 2]
+			}
+		},
+		'Mr. Dooty': {
+			Entity: {
+				name: 'Mr. Dooty',
+				life: [20, 25],
+				states: {
+					"active": {c: 83, f: '#ccccff'},
+					"dead": {c: 83, f: '#333333'}
+				},
+				odor: 1,
+			},
+			Mover: {
+				speed: [0.75, 1]
+			},
+			Sensor: {
+				see: 10,
+				hear: 0,
+				smell: 0
+			},
+			Mob: {
+				power: [4, 5]
+			}
+		}
+	}
+}
