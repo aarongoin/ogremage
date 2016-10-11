@@ -11,7 +11,7 @@
 	state: "active",
 
 	light: {
-		color: '#ffffff',
+		color: '#ff0000',
 		luminosity: 1
 	},
 

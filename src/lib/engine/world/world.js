@@ -27,6 +27,7 @@ World.prototype.update = function(dt) {
 	var key,
 		i = this.keys.length,
 		footholds,
+		foothold,
 		r;
 
 	while (i--) {

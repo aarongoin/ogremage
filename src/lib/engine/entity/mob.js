@@ -6,7 +6,6 @@ var Mob = function(self, init) {
 
 	this.self = self;
 	self.ai = this;
-
 	self.updates.push('ai');
 
 	this.power = (init.power) ? initValue(init.power) : 1;
@@ -23,7 +22,7 @@ Mob.prototype.update = function() {
 	if (this.target && this.target.life <= 0) this.target = null;
 	this._target = this.target;
 
-	this.self.sensor.detect(this.self.race.dislike);
+	this.self.sensor.detect(this.self.race.dislike); // in serious need of refactoring...
 
 	i = detected.length;
 	while (i--) {

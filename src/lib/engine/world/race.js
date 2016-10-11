@@ -4,7 +4,7 @@ var Builder = {
 		Sensor: require('../entity/sensor'),
 		Mob: require('../entity/mob')
 	},
-	Dispatch = require('../../util/dispatch');
+	Dispatch = (require('../../util/dispatch')).Central;
 
 var Race = function(init) {
 
@@ -53,8 +53,8 @@ var Race = function(init) {
 	};
 
 	this.stereotype = Race.formStereotypeOf(this);
-
 	Dispatch.on('death', this.onDeath.bind(this));
+
 };
 Race.prototype.rateLocal = function() {
 	var entity,
@@ -74,10 +74,10 @@ Race.prototype.rateLocal = function() {
 	}
 };
 
-Race.prototype.onDeath = function(deathEvent) {
-	var feelz = this.relations[deathEvent.detail.type];
-	if (feelz > 0) this.like.splice(this.like.indexOf(deathEvent.detail), 1);
-	else if (feelz < 0) this.dislike.splice(this.dislike.indexOf(deathEvent.detail), 1);
+Race.prototype.onDeath = function(deader) {
+	var feelz = this.relations[deader.type];
+	if (feelz > 0) this.like.splice(this.like.indexOf(deader), 1);
+	else if (feelz < 0) this.dislike.splice(this.dislike.indexOf(deader), 1);
 };
 
 Race.prototype.createMob = function(subtype) {

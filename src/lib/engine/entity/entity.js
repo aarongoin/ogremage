@@ -1,8 +1,9 @@
 var initValue = require('../../util/initValue'),
-	Dispatch = require('../../util/dispatch'),
+	Dispatch = (require('../../util/dispatch')).Central,
 	Color = require('../../util/color'),
 	Particle = require('../fx/particle');
 
+// Any "thing" that can be on the map -- mob, furniture, doors
 var Entity = function(self, init) {
 	if (init) this.init(init);
 
@@ -10,15 +11,9 @@ var Entity = function(self, init) {
 };
 Entity.prototype.init = function(init) {
 
-	this.id = ++Entity.idCount;
-	Entity.globalList.push(this);
-
 	this.tile = null;
-	this.updates = [];
 
-	this.type = init.type || "Human";
-	this.name = init.name || "Bill";
-	this.size = (init.size) ? initValue(init.size) : 0.9;
+	if (init.name) this.name = init.name;
 
 	this.life = (init.life) ? initValue(init.life) : 10; // power to exist
 	this.energy = 0; // power to act and move
@@ -27,15 +22,24 @@ Entity.prototype.init = function(init) {
 
 	this.states = init.states || {
 		"active": {c: 1, f: '#ffff00'},
+		"damage":  {c: 1, f: '#b21f35'},
 		"dead": {c: 1, f: '#333333'}
 	};
-	this.states.takingDamage = {c: this.states.active.c, f: '#b21f35'};
-	if (typeof init.state === 'string') init.state = init.states[init.state];
-	this.state = init.state || this.states["active"];
+	if (!this.states.damage) this.states.damage = {c: this.states.active.c, f: '#b21f35'};
+	this.state = (typeof init.state === 'string') ? init.states[init.state] : this.states["active"];
 
+	this.damageIndicator = { pos: null, acc: null, draw: {c: null, f: null} }; // not used???
+	this.id = ++Entity.idCount;
+	Entity.globalList.push(this);
+
+	this.tile = null;
+	this.updates = [];
+
+	this.type = init.type || "New Thang";
+	this.size = (init.size) ? initValue(init.size) : 0.9;
+	
 	this.lit = new Color(this.state.f);
 
-	this.damageIndicator = { pos: null, acc: null, draw: {c: null, f: null} };
 };
 Entity.prototype.place = function(tile) {
 	tile.occupy(this, true);
@@ -44,16 +48,9 @@ Entity.prototype.place = function(tile) {
 	return true;
 };
 Entity.prototype.update = function(energy) {
-	var i;
-
-	//if (this.state !== this.states.dead && this.odor) this.tile.space.scents[this.id] += this.odor;
-
-	if (this.state === this.states.active || this.state === this.states.takingDamage) {
-		this.energy += energy;
-
-		i = -1;
-		while (++i < this.updates.length) this[ this.updates[i] ].update();
-	}
+	this.energy += energy;
+	var i = -1;
+	while (++i < this.updates.length) this[ this.updates[i] ].update();
 };
 Entity.prototype.loseLife = function(amount) {
 	this.life -= amount;
@@ -62,7 +59,7 @@ Entity.prototype.loseLife = function(amount) {
 		this.die();
 		return true;
 	}
-	this.state = this.states.takingDamage;
+	this.state = this.states.damage;
 	this.lit.beHex(this.state.f);
 	setTimeout(function(){
 		if (this.state !== this.states.dead) {
@@ -78,7 +75,7 @@ Entity.prototype.die = function() {
 	this.lit.beHex(this.state.f);
 	this.tile.leave(this);
 	Entity.globalList.splice(Entity.globalList.indexOf(this), 1);
-	Dispatch(new CustomEvent('death', {detail: this }));
+	Dispatch('death', this);
 };
 
 Entity.idCount = 0;

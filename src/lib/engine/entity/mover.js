@@ -33,6 +33,8 @@ Mover.prototype.moveTo = function(tile, updateOnly) {
 			else if (this.path.length === 1) this.path[0] = tile;
 			else this.pathfindToCorners(tile);
 		}
+
+
 	}
 };
 Mover.prototype.move = function(tile) {
@@ -172,7 +174,7 @@ Mover.prototype.pathfindToCorners = function(tile) {
 
 	// cleanup sloppy corner connections
 	if ( (this.path.length > 2) && this.path[0].traceTo(this.path[2], this.checkTile) ) this.path.splice(1, 1);
-	if ( (this.path.length > 2) && this.self.tile.traceTo(this.path[this.path.length - 2], this.checkTile) ) this.path.splice(this.path.length - 1, 1);
+	if ( (this.path.length > 2) && this.self.tile.traceTo(this.path[this.path.length - 3], this.checkTile) ) this.path.splice(this.path.length - 2, 1);
 	if (this.self.tile === this.path[this.path.length - 1]) this.path.pop();
 };
 

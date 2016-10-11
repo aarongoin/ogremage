@@ -10,11 +10,13 @@ var DrawBuffer = function(w, h) {
 	this._b = new Color('#000000');
 };
 
+// Called every time the buffer passes from Game to Engine
 DrawBuffer.prototype.setBuffer = function(buffer, w, h) {
 	this.buffer = buffer;
 	this.width = w;
 	this.height = h;
 
+	// Could functionally be Uint8 but would limit map size to maximum of 256 tiles in width and height
 	this.reader = new Uint16Array(this.buffer);
 	this.length = this.reader.length;
 };
@@ -53,7 +55,7 @@ DrawBuffer.prototype.read = function() {
 };
 DrawBuffer.prototype.write = function(x, y, t) {
 
-	var offset = x * y * 18;
+	var offset = ((x * this.height) + y) * 9;
 
 	if (t.c) this.reader[offset++] = t.c;
 	else offset++;

@@ -386,7 +386,7 @@ Console.prototype.resize = function() {
     if (this.tiles.length !== this.width || this.tiles[0].length !== this.height) this.createTiles();
     else this.start();
 
-    if (this.didResize) this.didResize(this.width, this.height);
+    if (this.didResize) this.didResize({width: this.width, height: this.height});
 };
 
 Console.prototype.checkReady = function(){
@@ -401,9 +401,10 @@ Console.prototype.checkReady = function(){
 // DRAW RELATED /////////////////////////////////////////////////////////////////////////////
 
 Console.prototype.render = function(time) {
-    //if (this.clearBeforeDraw) this.clear();
-    while ( this.blit( this.queue.pop() ) );
-    this.rAF(this.render);
+    if (this.isActive) {
+        while ( this.blit( this.queue.pop() ) );
+        this.rAF(this.render);
+    }
 };
 
 Console.prototype.blit = function(tile) {

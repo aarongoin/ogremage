@@ -2,6 +2,7 @@ var initValue = require ('../../util/initValue'),
 	Sensor = require('./sensor'),
 	Mover = require('./mover');
 
+// Beast cannot use tools
 var Beast = function(self, init) {
 
 	this.self = self;
@@ -29,9 +30,6 @@ Beast.prototype.attack = function(entity) {
 
 };
 Beast.prototype.flee = function(entity) {
-
-};
-Beast.prototype.attack = function(entity) {
 
 };
 

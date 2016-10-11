@@ -4,33 +4,45 @@ var Viewport = require('./viewport'),
 	LocalMap = require('./map'),
 	Player = require('./player'),
 	Clock = require('./clock'),
+	LightUpdate = (require('./fx/light')).update,
 	Animation = require('./fx/animation'),
-	Dispatch = require('../util/dispatch'),
+	Dispatch = (require('../util/dispatch')).Central,
 	Entity = require('./entity/entity'),
 	DrawBuffer = require('../util/drawBuffer');
 
-var Local = function(ENGINE, BP, callback){
+var Local = function(BP, drawFunc, callback){
 
-	this.ENGINE = ENGINE;
+	this.draw = drawFunc;
 
 	this.drawSpace = new DrawBuffer();
 
 	//this.HUD = new HUD();
 
+	// Save the blueprint file
 	this.BP = BP;
 
+	// World simulates game races in all areas
 	this.WORLD = new World(BP);
 
+	// Create new game clock moving at 1x speed
+	// Clock governs passage of game time
 	this.CLOCK = new Clock(1);
 
 	this.onExit = this.onExit.bind(this);
 
+	// Load starting area
 	this.load(this.WORLD.current, 0.3, BP.start.x, BP.start.y);
 
+	// Dispatcher for any mob or player death events
 	Dispatch.on('death', this.onDeath.bind(this));
 
+	// Start the Engine!
 	callback();
 };
+
+Local.prototype.onResize = function(w, h) {
+	Viewport.checkDims(w, h);
+}
 
 Local.prototype.drawBuffer = function(buffer, w, h) {
 	this.drawSpace.setBuffer(buffer, w, h);
@@ -39,12 +51,13 @@ Local.prototype.drawBuffer = function(buffer, w, h) {
 };
 
 Local.prototype.onDeath = function(deadEntity) {
-	deadEntity = deadEntity.detail;
+	deadEntity = deadEntity;
 	if (deadEntity.isPC) {
 		this.CLOCK.speed = 8;
 		this.PLAYER.light.isOn = false;
 	} else if (deadEntity.race) {
 		deadEntity.race.territory[this.WORLD.current.id].population--;
+		this.mobs.splice(this.mobs.indexOf(deadEntity), 1);
 	}
 };
 
@@ -103,6 +116,7 @@ Local.prototype.spawn = function() {
 	}
 };
 
+// Update game
 Local.prototype.update = function(dt) {
 	var i;
 
@@ -115,13 +129,13 @@ Local.prototype.update = function(dt) {
 		i = this.mobs.length;
 		while (i--) this.mobs[i].update(this.CLOCK.energy);
 
-		//this.PLAYER.light.update();
+		LightUpdate();
 		
 		Animation.updateGlobal(this.CLOCK.dt);
 
 		if (!this.drawSpace.afk()) {
-			Viewport.draw();
-			this.ENGINE.draw(this.drawSpace.buffer);
+			Viewport.draw(this.drawSpace);
+			this.draw(this.drawSpace.buffer);
 		}
 	}
 };

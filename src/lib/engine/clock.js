@@ -13,12 +13,9 @@ Clock.prototype.tick = function(milliseconds) {
 
 	return false;
 };
-Clock.prototype.resetTo = function(speed, secondsPerMinute) {
-
+Clock.prototype.resetTo = function(speed) {
 	this.speed = speed;
 	this.energy = 0;
-
-	this.secondsPerMinute = secondsPerMinute;
 };
 
 module.exports = Clock;

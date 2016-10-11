@@ -29,18 +29,28 @@ Viewport.update = function(pc) {
 	Viewport.bottom = Viewport.top + Viewport.height;
 };
 
-Viewport.draw = function(cx, cy) {
-	var mx = Viewport.left + cx,
-		my = Viewport.top + cy;
+Draw = function(buffer) {
+	var mx = Viewport.left - 1,
+		my,
+		vx = -1,
+		vy;
 
-	if ((mx > -1 && mx < Viewport.MAP.width) && (my > -1 && my < Viewport.MAP.height)) {
-		Viewport.MAP.data[mx][my][Viewport.drawFunc]((Viewport.PC.pcCanSeeId || 0), Viewport.draw);
-	} else {
-		Viewport.draw.c = Viewport.nullSpace.c;
-		Viewport.draw.f = Viewport.nullSpace.fb;
-		Viewport.draw.b = Viewport.nullSpace.fb;
+	while (++mx < Viewport.right) {
+		vx++;
+		my = Viewport.top - 1;
+		vy = -1;
+		while (++my < Viewport.bottom) {
+			vy++;
+			if ((mx > -1 && mx < Viewport.MAP.width) && (my > -1 && my < Viewport.MAP.height)) {
+				Viewport.MAP.data[mx][my][Viewport.drawFunc]((Viewport.PC.pcCanSeeId || 0), Viewport.draw);
+			} else {
+				Viewport.draw.c = Viewport.nullSpace.c;
+				Viewport.draw.f = Viewport.nullSpace.fb;
+				Viewport.draw.b = Viewport.nullSpace.fb;
+			}
+			buffer.write(vx, vy, Viewport.draw);
+		}
 	}
-	return Viewport.draw;
 };
 
 Viewport.getMapTile = function(x, y) {
@@ -62,7 +72,7 @@ module.exports = {
 
 	update: Viewport.update,
 
-	draw: Viewport.draw,
+	draw: Draw,
 
 	getMapTile: Viewport.getMapTile,
 

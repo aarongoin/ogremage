@@ -8,34 +8,40 @@ var ENGINE = {
 		quit: function(){},
 		update: function(){},
 		loop: {
-			last: null,
-			start: Date.now(),
-			dt: null
+			last: null, // last datetime in milliseconds that loop ran
+			start: Date.now(), // datetime in milliseconds that loop runs
+			dt: null // the change in datetime in milliseconds since last loop
 		}
 	},
 	GAME = new Channel(self);
 
-	GAME.to('quit');
-	GAME.to('save');
+GAME.to('quit');
+GAME.to('save');
 
-	GAME.from('init', function(copied, transfered) {
+GAME.from('init', function(copied, transfered) {
 
-
-		ENGINE.LOCAL = new Local(ENGINE, copied, function(){
-			ENGINE.shouldRun = true;
-			ENGINE.start();
-		});
+	// Create Local Scene using blueprint copied in
+	ENGINE.LOCAL = new Local(copied, ENGINE.draw, function(){
+		ENGINE.shouldRun = true;
+		ENGINE.start();
 	});
+});
 
-	GAME.from('input', function(gesture) {
-		if (gesture.type === 't1Double') {
-			ENGINE.LOCAL.t1Double(gesture);
-		}
-	});
+GAME.from('input', function(gesture) {
+	if (gesture.type === 't1Double') {
+		// Pass double-tap to Local Scene
+		ENGINE.LOCAL.t1Double(gesture);
+	}
+});
 
-	GAME.toFrom('draw', function(copied, transfered) {
-		ENGINE.LOCAL.drawBuffer(transfered, copied.width, copied.height);
-	});
+GAME.toFrom('draw', function(copied, transfered) {
+	// Pass draw buffer to Local Scene
+	ENGINE.LOCAL.drawBuffer(transfered, copied.width, copied.height);
+});
+
+GAME.from('resize', function(copied, transfered) {
+	ENGINE.LOCAL.onResize(copied.width, copied.height);
+});
 
 ENGINE.start = function() {
 	setTimeout(ENGINE.update, 0);
@@ -50,6 +56,7 @@ ENGINE.update = function() {
 	ENGINE.loop.start = Date.now();
 	ENGINE.loop.dt = ENGINE.loop.start - ENGINE.loop.last;
 
+	// Local Scene updates according to passed time step
 	ENGINE.LOCAL.update(ENGINE.loop.dt);
 
 	if (ENGINE.shouldRun) setTimeout(ENGINE.update, (40 - (Date.now() - ENGINE.loop.start)));
@@ -57,6 +64,7 @@ ENGINE.update = function() {
 };
 
 ENGINE.draw = function(drawSpace) {
+	// Pass draw buffer to GAME for rendering
 	GAME.draw({ transfer: drawSpace });
 };
 },{"./lib/engine/local":12,"./lib/util/channel":23}],2:[function(require,module,exports){
@@ -75,21 +83,19 @@ Clock.prototype.tick = function(milliseconds) {
 
 	return false;
 };
-Clock.prototype.resetTo = function(speed, secondsPerMinute) {
-
+Clock.prototype.resetTo = function(speed) {
 	this.speed = speed;
 	this.energy = 0;
-
-	this.secondsPerMinute = secondsPerMinute;
 };
 
 module.exports = Clock;
 },{}],3:[function(require,module,exports){
 var initValue = require('../../util/initValue'),
-	Dispatch = require('../../util/dispatch'),
+	Dispatch = (require('../../util/dispatch')).Central,
 	Color = require('../../util/color'),
 	Particle = require('../fx/particle');
 
+// Any "thing" that can be on the map -- mob, furniture, doors
 var Entity = function(self, init) {
 	if (init) this.init(init);
 
@@ -97,15 +103,9 @@ var Entity = function(self, init) {
 };
 Entity.prototype.init = function(init) {
 
-	this.id = ++Entity.idCount;
-	Entity.globalList.push(this);
-
 	this.tile = null;
-	this.updates = [];
 
-	this.type = init.type || "Human";
-	this.name = init.name || "Bill";
-	this.size = (init.size) ? initValue(init.size) : 0.9;
+	if (init.name) this.name = init.name;
 
 	this.life = (init.life) ? initValue(init.life) : 10; // power to exist
 	this.energy = 0; // power to act and move
@@ -114,15 +114,24 @@ Entity.prototype.init = function(init) {
 
 	this.states = init.states || {
 		"active": {c: 1, f: '#ffff00'},
+		"damage":  {c: 1, f: '#b21f35'},
 		"dead": {c: 1, f: '#333333'}
 	};
-	this.states.takingDamage = {c: this.states.active.c, f: '#b21f35'};
-	if (typeof init.state === 'string') init.state = init.states[init.state];
-	this.state = init.state || this.states["active"];
+	if (!this.states.damage) this.states.damage = {c: this.states.active.c, f: '#b21f35'};
+	this.state = (typeof init.state === 'string') ? init.states[init.state] : this.states["active"];
 
+	this.damageIndicator = { pos: null, acc: null, draw: {c: null, f: null} }; // not used???
+	this.id = ++Entity.idCount;
+	Entity.globalList.push(this);
+
+	this.tile = null;
+	this.updates = [];
+
+	this.type = init.type || "New Thang";
+	this.size = (init.size) ? initValue(init.size) : 0.9;
+	
 	this.lit = new Color(this.state.f);
 
-	this.damageIndicator = { pos: null, acc: null, draw: {c: null, f: null} };
 };
 Entity.prototype.place = function(tile) {
 	tile.occupy(this, true);
@@ -131,16 +140,9 @@ Entity.prototype.place = function(tile) {
 	return true;
 };
 Entity.prototype.update = function(energy) {
-	var i;
-
-	//if (this.state !== this.states.dead && this.odor) this.tile.space.scents[this.id] += this.odor;
-
-	if (this.state === this.states.active || this.state === this.states.takingDamage) {
-		this.energy += energy;
-
-		i = -1;
-		while (++i < this.updates.length) this[ this.updates[i] ].update();
-	}
+	this.energy += energy;
+	var i = -1;
+	while (++i < this.updates.length) this[ this.updates[i] ].update();
 };
 Entity.prototype.loseLife = function(amount) {
 	this.life -= amount;
@@ -149,7 +151,7 @@ Entity.prototype.loseLife = function(amount) {
 		this.die();
 		return true;
 	}
-	this.state = this.states.takingDamage;
+	this.state = this.states.damage;
 	this.lit.beHex(this.state.f);
 	setTimeout(function(){
 		if (this.state !== this.states.dead) {
@@ -165,7 +167,7 @@ Entity.prototype.die = function() {
 	this.lit.beHex(this.state.f);
 	this.tile.leave(this);
 	Entity.globalList.splice(Entity.globalList.indexOf(this), 1);
-	Dispatch(new CustomEvent('death', {detail: this }));
+	Dispatch('death', this);
 };
 
 Entity.idCount = 0;
@@ -181,7 +183,6 @@ var Mob = function(self, init) {
 
 	this.self = self;
 	self.ai = this;
-
 	self.updates.push('ai');
 
 	this.power = (init.power) ? initValue(init.power) : 1;
@@ -198,7 +199,7 @@ Mob.prototype.update = function() {
 	if (this.target && this.target.life <= 0) this.target = null;
 	this._target = this.target;
 
-	this.self.sensor.detect(this.self.race.dislike);
+	this.self.sensor.detect(this.self.race.dislike); // in serious need of refactoring...
 
 	i = detected.length;
 	while (i--) {
@@ -269,6 +270,8 @@ Mover.prototype.moveTo = function(tile, updateOnly) {
 			else if (this.path.length === 1) this.path[0] = tile;
 			else this.pathfindToCorners(tile);
 		}
+
+
 	}
 };
 Mover.prototype.move = function(tile) {
@@ -408,7 +411,7 @@ Mover.prototype.pathfindToCorners = function(tile) {
 
 	// cleanup sloppy corner connections
 	if ( (this.path.length > 2) && this.path[0].traceTo(this.path[2], this.checkTile) ) this.path.splice(1, 1);
-	if ( (this.path.length > 2) && this.self.tile.traceTo(this.path[this.path.length - 2], this.checkTile) ) this.path.splice(this.path.length - 1, 1);
+	if ( (this.path.length > 2) && this.self.tile.traceTo(this.path[this.path.length - 3], this.checkTile) ) this.path.splice(this.path.length - 2, 1);
 	if (this.self.tile === this.path[this.path.length - 1]) this.path.pop();
 };
 
@@ -609,6 +612,8 @@ Light.prototype.shineOn = function(tile, dx, dy) {
 
 	if (this.shadows.shadowCast(tile, dx, dy, this._distance)) this.drawOn(tile, this._distance);
 
+	return true;
+
 };
 Light.prototype.drawOn = function(tile, distance) {
 	this._alpha = this.brightness(distance);
@@ -622,7 +627,7 @@ Light.update = function() {
 	while(i--) if (this.globalList[i] !== this && this.globalList[i].isOn) this.globalList[i].shineFrom();
 };
 
-module.exports = Light;
+module.exports = {update: Light.update.bind(Light), Light: Light};
 },{"../../util/color":24,"./shadows":10}],9:[function(require,module,exports){
 var _i,
 	_p,
@@ -802,33 +807,45 @@ var Viewport = require('./viewport'),
 	LocalMap = require('./map'),
 	Player = require('./player'),
 	Clock = require('./clock'),
+	LightUpdate = (require('./fx/light')).update,
 	Animation = require('./fx/animation'),
-	Dispatch = require('../util/dispatch'),
+	Dispatch = (require('../util/dispatch')).Central,
 	Entity = require('./entity/entity'),
 	DrawBuffer = require('../util/drawBuffer');
 
-var Local = function(ENGINE, BP, callback){
+var Local = function(BP, drawFunc, callback){
 
-	this.ENGINE = ENGINE;
+	this.draw = drawFunc;
 
 	this.drawSpace = new DrawBuffer();
 
 	//this.HUD = new HUD();
 
+	// Save the blueprint file
 	this.BP = BP;
 
+	// World simulates game races in all areas
 	this.WORLD = new World(BP);
 
+	// Create new game clock moving at 1x speed
+	// Clock governs passage of game time
 	this.CLOCK = new Clock(1);
 
 	this.onExit = this.onExit.bind(this);
 
+	// Load starting area
 	this.load(this.WORLD.current, 0.3, BP.start.x, BP.start.y);
 
+	// Dispatcher for any mob or player death events
 	Dispatch.on('death', this.onDeath.bind(this));
 
+	// Start the Engine!
 	callback();
 };
+
+Local.prototype.onResize = function(w, h) {
+	Viewport.checkDims(w, h);
+}
 
 Local.prototype.drawBuffer = function(buffer, w, h) {
 	this.drawSpace.setBuffer(buffer, w, h);
@@ -837,12 +854,13 @@ Local.prototype.drawBuffer = function(buffer, w, h) {
 };
 
 Local.prototype.onDeath = function(deadEntity) {
-	deadEntity = deadEntity.detail;
+	deadEntity = deadEntity;
 	if (deadEntity.isPC) {
 		this.CLOCK.speed = 8;
 		this.PLAYER.light.isOn = false;
 	} else if (deadEntity.race) {
 		deadEntity.race.territory[this.WORLD.current.id].population--;
+		this.mobs.splice(this.mobs.indexOf(deadEntity), 1);
 	}
 };
 
@@ -901,6 +919,7 @@ Local.prototype.spawn = function() {
 	}
 };
 
+// Update game
 Local.prototype.update = function(dt) {
 	var i;
 
@@ -913,19 +932,19 @@ Local.prototype.update = function(dt) {
 		i = this.mobs.length;
 		while (i--) this.mobs[i].update(this.CLOCK.energy);
 
-		//this.PLAYER.light.update();
+		LightUpdate();
 		
 		Animation.updateGlobal(this.CLOCK.dt);
 
 		if (!this.drawSpace.afk()) {
-			Viewport.draw();
-			this.ENGINE.draw(this.drawSpace.buffer);
+			Viewport.draw(this.drawSpace);
+			this.draw(this.drawSpace.buffer);
 		}
 	}
 };
 
 module.exports = Local;
-},{"../util/dispatch":25,"../util/drawBuffer":26,"./clock":2,"./entity/entity":3,"./fx/animation":7,"./hud":11,"./map":13,"./player":17,"./viewport":18,"./world/world":20}],13:[function(require,module,exports){
+},{"../util/dispatch":25,"../util/drawBuffer":26,"./clock":2,"./entity/entity":3,"./fx/animation":7,"./fx/light":8,"./hud":11,"./map":13,"./player":17,"./viewport":18,"./world/world":20}],13:[function(require,module,exports){
 var Tile = require('./map/tile'),
 	Border = require('./map/border'),
 	bitMap = require('../util/bitMap'),
@@ -1478,7 +1497,7 @@ module.exports = Tile;
 var Mover = require('./entity/mover'),
 	Entity = require('./entity/entity'),
 	ShadowsList = require('./fx/shadows'),
-	Light = require('./fx/light'),
+	Light = (require('./fx/light')).Light,
 	Animation = require('./fx/animation');
 
 var Player = function(PC, clock, viewport) {
@@ -1554,7 +1573,7 @@ Player.prototype.playerPlace = function(tile) {
 };
 Player.prototype.playerUpdate = function(energy){
 	this.pcCanSeeId++;
-
+	
 	this.entityUpdate(energy);
 	this.FOV();
 	if (this.energy > 1.5) this.energy = 1.5;
@@ -1603,18 +1622,28 @@ Viewport.update = function(pc) {
 	Viewport.bottom = Viewport.top + Viewport.height;
 };
 
-Viewport.draw = function(cx, cy) {
-	var mx = Viewport.left + cx,
-		my = Viewport.top + cy;
+Draw = function(buffer) {
+	var mx = Viewport.left - 1,
+		my,
+		vx = -1,
+		vy;
 
-	if ((mx > -1 && mx < Viewport.MAP.width) && (my > -1 && my < Viewport.MAP.height)) {
-		Viewport.MAP.data[mx][my][Viewport.drawFunc]((Viewport.PC.pcCanSeeId || 0), Viewport.draw);
-	} else {
-		Viewport.draw.c = Viewport.nullSpace.c;
-		Viewport.draw.f = Viewport.nullSpace.fb;
-		Viewport.draw.b = Viewport.nullSpace.fb;
+	while (++mx < Viewport.right) {
+		vx++;
+		my = Viewport.top - 1;
+		vy = -1;
+		while (++my < Viewport.bottom) {
+			vy++;
+			if ((mx > -1 && mx < Viewport.MAP.width) && (my > -1 && my < Viewport.MAP.height)) {
+				Viewport.MAP.data[mx][my][Viewport.drawFunc]((Viewport.PC.pcCanSeeId || 0), Viewport.draw);
+			} else {
+				Viewport.draw.c = Viewport.nullSpace.c;
+				Viewport.draw.f = Viewport.nullSpace.fb;
+				Viewport.draw.b = Viewport.nullSpace.fb;
+			}
+			buffer.write(vx, vy, Viewport.draw);
+		}
 	}
-	return Viewport.draw;
 };
 
 Viewport.getMapTile = function(x, y) {
@@ -1636,7 +1665,7 @@ module.exports = {
 
 	update: Viewport.update,
 
-	draw: Viewport.draw,
+	draw: Draw,
 
 	getMapTile: Viewport.getMapTile,
 
@@ -1650,7 +1679,7 @@ var Builder = {
 		Sensor: require('../entity/sensor'),
 		Mob: require('../entity/mob')
 	},
-	Dispatch = require('../../util/dispatch');
+	Dispatch = (require('../../util/dispatch')).Central;
 
 var Race = function(init) {
 
@@ -1699,8 +1728,8 @@ var Race = function(init) {
 	};
 
 	this.stereotype = Race.formStereotypeOf(this);
-
 	Dispatch.on('death', this.onDeath.bind(this));
+
 };
 Race.prototype.rateLocal = function() {
 	var entity,
@@ -1720,10 +1749,10 @@ Race.prototype.rateLocal = function() {
 	}
 };
 
-Race.prototype.onDeath = function(deathEvent) {
-	var feelz = this.relations[deathEvent.detail.type];
-	if (feelz > 0) this.like.splice(this.like.indexOf(deathEvent.detail), 1);
-	else if (feelz < 0) this.dislike.splice(this.dislike.indexOf(deathEvent.detail), 1);
+Race.prototype.onDeath = function(deader) {
+	var feelz = this.relations[deader.type];
+	if (feelz > 0) this.like.splice(this.like.indexOf(deader), 1);
+	else if (feelz < 0) this.dislike.splice(this.dislike.indexOf(deader), 1);
 };
 
 Race.prototype.createMob = function(subtype) {
@@ -1921,6 +1950,7 @@ World.prototype.update = function(dt) {
 	var key,
 		i = this.keys.length,
 		footholds,
+		foothold,
 		r;
 
 	while (i--) {
@@ -2006,6 +2036,11 @@ module.exports = { toB62: toB62, toB10: toB10 };
 var convert = require('./base62');
 
 module.exports = {
+	/*
+		uncompressed : string consisting only of spaces or pound signs
+			'#' : wall
+			' ' : floor
+	*/
 	pack: function(uncompressed) {
 		var out = '',
 			flag = 0,
@@ -2221,9 +2256,9 @@ var events = {},
 	list,
 	i;
 
-var Dispatch = function(event) {
-	if (events[event.type]) {
-		list = events[event.type];
+var Dispatch = function(type, event) {
+	if (events[type]) {
+		list = events[type];
 		i = list.length;
 		while (i--) (list[i])(event);
 	}
@@ -2237,7 +2272,45 @@ Dispatch.remove = function(event, callback) {
 	events[event].splice(events[event].indexOf(callback), 1);
 };
 
-module.exports = Dispatch;
+var Dispatcher = function() {
+	var self = {
+		events: {},
+		list: null,
+		i: null
+	};
+	this.on = _on.bind(self);
+	this.remove = _remove.bind(self);
+};
+
+function _on(event, callback) {
+	// does event not yet exist?
+	if (!this.events[event]) {
+		// create it
+		this.events[event] = [callback];
+		// and set it's callback
+		this[event] = callback;
+	// event already exists, but are we already tracking the callback?
+	} else if (this.events[event].indexOf(callback) === -1) {
+		// add this new callback
+		this.events[event].push(callback);
+		// and set callback as function to iterate over list on event
+		this[event] = _callbacks.bind(this, event);
+	}
+	
+};
+function _remove(event, callback) {
+	events[event].splice(events[event].indexOf(callback), 1);
+};
+function _callbacks(type, event) {
+	var i;
+	this.list = events[type];
+	i = this.list.length;
+	while (i--) (this.list[i])(event);
+}
+
+module.exports = {Dispatcher: Dispatcher, Central: Dispatch};
+
+
 },{}],26:[function(require,module,exports){
 var Color = require('../util/color');
 
@@ -2251,11 +2324,13 @@ var DrawBuffer = function(w, h) {
 	this._b = new Color('#000000');
 };
 
+// Called every time the buffer passes from Game to Engine
 DrawBuffer.prototype.setBuffer = function(buffer, w, h) {
 	this.buffer = buffer;
 	this.width = w;
 	this.height = h;
 
+	// Could functionally be Uint8 but would limit map size to maximum of 256 tiles in width and height
 	this.reader = new Uint16Array(this.buffer);
 	this.length = this.reader.length;
 };
@@ -2294,7 +2369,7 @@ DrawBuffer.prototype.read = function() {
 };
 DrawBuffer.prototype.write = function(x, y, t) {
 
-	var offset = x * y * 18;
+	var offset = ((x * this.height) + y) * 9;
 
 	if (t.c) this.reader[offset++] = t.c;
 	else offset++;

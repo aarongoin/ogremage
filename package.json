@@ -7,7 +7,8 @@
     "build:html": "html-minifier --remove-comments --remove-comments-from-cdata --collapse-whitespace --case-sensitive src/index.html > build/index.html",
     "build:js": "browserify src/index.js -o build/index.js",
     "build:engine": "browserify src/engine.js -o build/engine.js",
-    "build:bp": "node packBlueprints.js"
+    "build:bp": "node packBlueprints.js",
+    "serve": "cd build && python -m SimpleHTTPServer"
   },
   "author": "Aaron Goin",
   "dependencies": {

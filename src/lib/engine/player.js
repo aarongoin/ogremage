@@ -1,7 +1,7 @@
 var Mover = require('./entity/mover'),
 	Entity = require('./entity/entity'),
 	ShadowsList = require('./fx/shadows'),
-	Light = require('./fx/light'),
+	Light = (require('./fx/light')).Light,
 	Animation = require('./fx/animation');
 
 var Player = function(PC, clock, viewport) {
@@ -77,7 +77,7 @@ Player.prototype.playerPlace = function(tile) {
 };
 Player.prototype.playerUpdate = function(energy){
 	this.pcCanSeeId++;
-
+	
 	this.entityUpdate(energy);
 	this.FOV();
 	if (this.energy > 1.5) this.energy = 1.5;

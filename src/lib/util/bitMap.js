@@ -1,6 +1,11 @@
 var convert = require('./base62');
 
 module.exports = {
+	/*
+		uncompressed : string consisting only of spaces or pound signs
+			'#' : wall
+			' ' : floor
+	*/
 	pack: function(uncompressed) {
 		var out = '',
 			flag = 0,

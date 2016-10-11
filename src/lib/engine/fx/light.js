@@ -38,6 +38,8 @@ Light.prototype.shineOn = function(tile, dx, dy) {
 
 	if (this.shadows.shadowCast(tile, dx, dy, this._distance)) this.drawOn(tile, this._distance);
 
+	return true;
+
 };
 Light.prototype.drawOn = function(tile, distance) {
 	this._alpha = this.brightness(distance);
@@ -51,4 +53,4 @@ Light.update = function() {
 	while(i--) if (this.globalList[i] !== this && this.globalList[i].isOn) this.globalList[i].shineFrom();
 };
 
-module.exports = Light;
+module.exports = {update: Light.update.bind(Light), Light: Light};
