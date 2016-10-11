@@ -42,13 +42,14 @@ Entity.prototype.init = function(init) {
 
 };
 Entity.prototype.place = function(tile) {
+	if (tile.isWall) return false;
 	tile.occupy(this, true);
 	this.tile = tile;
 	this._tile = null;
 	return true;
 };
 Entity.prototype.update = function(energy) {
-	this.energy += energy;
+	if (this.life) this.energy += energy;
 	var i = -1;
 	while (++i < this.updates.length) this[ this.updates[i] ].update();
 };
@@ -71,6 +72,7 @@ Entity.prototype.loseLife = function(amount) {
 };
 Entity.prototype.die = function() {
 	this.life = 0;
+	this.energy = 0;
 	this.state = this.states.dead;
 	this.lit.beHex(this.state.f);
 	this.tile.leave(this);

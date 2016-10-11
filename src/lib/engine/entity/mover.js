@@ -55,7 +55,7 @@ Mover.prototype.move = function(tile) {
 Mover.prototype.update = function() {
 	var open;
 	while (this.canMove() && this.path.length) {
-		open = this.self.tile.border.open();
+		open = this.self.tile.border.open(this.self.size);
 		if (open.length) this.move( this.chooseClosestTileTo(this.path[this.path.length - 1], open) );
 		else break;
 	}

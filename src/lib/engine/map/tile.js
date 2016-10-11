@@ -15,6 +15,7 @@ var Tile = function(x, y, draw, tiles) {
 	this.border = null;
 	//this.space = null;
 	this.occupant = this;
+	this.space = 0;
 	this.isWall = true;
 
 	this.light = 0;
@@ -38,14 +39,17 @@ Tile.prototype.setFog = function() {
 	this.fog.b.bake();
 };
 Tile.prototype.occupy = function(entity, override) {
-	this.occupant = entity;
+	this.occupant.push(entity);
+	this.space -= entity.size;
 	if (!override) {
 		if (this.exit) this.callback(entity, this.exit);
 		else if (this.callback) this.callback(entity);
 	}
 };
 Tile.prototype.leave = function(entity) {
-	this.occupant = null;
+	this.occupant.splice(this.occupant.indexOf(entity), 1);
+	this.space += entity.size;
+
 };
 Tile.prototype.applyLight = function() {
 	this.lit.f.reset();
@@ -59,9 +63,9 @@ Tile.prototype.applyLight = function() {
 Tile.prototype.drawPC = function(pcCanSeeId, draw) {
 	this.applyLight();
 	if (this.pcCanSee === pcCanSeeId) {
-		if (this.occupant && !this.isWall) {
-			draw.c = this.occupant.state.c;
-			draw.f = this.occupant.lit;
+		if (this.occupant.length) {
+			draw.c = this.occupant[this.occupant.length - 1].state.c;
+			draw.f = this.occupant[this.occupant.length - 1].lit;
 			draw.b = this.lit.b;
 		} else {
 			draw.c = this.state.c;
@@ -80,9 +84,9 @@ Tile.prototype.drawPC = function(pcCanSeeId, draw) {
 Tile.prototype.drawFog = function(pcCanSeeId, draw) {
 	if (this.pcCanSee === pcCanSeeId) {
 		this.applyLight();
-		if (this.occupant && !this.isWall) {
-			draw.c = this.occupant.state.c;
-			draw.f = this.occupant.lit;
+		if (this.occupant.length) {
+			draw.c = this.occupant[this.occupant.length - 1].state.c;
+			draw.f = this.occupant[this.occupant.length - 1].lit;
 			draw.b = this.lit.b;
 		} else {
 			draw.c = this.state.c;
@@ -105,9 +109,9 @@ Tile.prototype.drawFog = function(pcCanSeeId, draw) {
 };
 Tile.prototype.drawFull = function(pcCanSeeId, draw) {
 	this.applyLight();
-	if (this.occupant && !this.isWall) {
-		draw.c = this.occupant.state.c;
-		draw.f = this.occupant.lit;
+	if (this.occupant.length) {
+		draw.c = this.occupant[this.occupant.length - 1].state.c;
+		draw.f = this.occupant[this.occupant.length - 1].lit;
 		draw.b = this.lit.b;
 	} else {
 		draw.c = this.state.c;

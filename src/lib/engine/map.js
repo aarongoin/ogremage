@@ -87,7 +87,8 @@ function applyPrefab(x, y, isWall) {
 			tile.occupant = tile;
 		} else {
 			tile.bakeOn(this.base.floor);
-			tile.occupant = null;
+			tile.occupant = [];
+			tile.space = 1;
 
 			// TODO - Record open tiles at edge of prefab that aren't at edge of map
 		}
@@ -100,7 +101,8 @@ function bindExit(v, i) {
 		tile.exit = v;
 		tile.callback = this.LOCAL.onExit;
 
-		tile.occupant = null;
+		tile.occupant = [];
+		tile.space = 1;
 		tile.isWall = false;
 		tile.bakeOn(this.base.exit);
 

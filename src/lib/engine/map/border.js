@@ -11,12 +11,12 @@ var Border = function(all) {
 	this.all = all;
 	this.i = null;
 };
-Border.prototype.open = function() {
+Border.prototype.open = function(size) {
 	var open = [];
 
 	this.i = this.all.length;
 	while (this.i--) {
-		if (!this.all[this.i].occupant) open.push(this.all[this.i]);
+		if (this.all[this.i].space >= size) open.push(this.all[this.i]);
 	}
 
 	return open;

@@ -134,13 +134,14 @@ Entity.prototype.init = function(init) {
 
 };
 Entity.prototype.place = function(tile) {
+	if (tile.isWall) return false;
 	tile.occupy(this, true);
 	this.tile = tile;
 	this._tile = null;
 	return true;
 };
 Entity.prototype.update = function(energy) {
-	this.energy += energy;
+	if (this.life) this.energy += energy;
 	var i = -1;
 	while (++i < this.updates.length) this[ this.updates[i] ].update();
 };
@@ -163,6 +164,7 @@ Entity.prototype.loseLife = function(amount) {
 };
 Entity.prototype.die = function() {
 	this.life = 0;
+	this.energy = 0;
 	this.state = this.states.dead;
 	this.lit.beHex(this.state.f);
 	this.tile.leave(this);
@@ -292,7 +294,7 @@ Mover.prototype.move = function(tile) {
 Mover.prototype.update = function() {
 	var open;
 	while (this.canMove() && this.path.length) {
-		open = this.self.tile.border.open();
+		open = this.self.tile.border.open(this.self.size);
 		if (open.length) this.move( this.chooseClosestTileTo(this.path[this.path.length - 1], open) );
 		else break;
 	}
@@ -1034,7 +1036,8 @@ function applyPrefab(x, y, isWall) {
 			tile.occupant = tile;
 		} else {
 			tile.bakeOn(this.base.floor);
-			tile.occupant = null;
+			tile.occupant = [];
+			tile.space = 1;
 
 			// TODO - Record open tiles at edge of prefab that aren't at edge of map
 		}
@@ -1047,7 +1050,8 @@ function bindExit(v, i) {
 		tile.exit = v;
 		tile.callback = this.LOCAL.onExit;
 
-		tile.occupant = null;
+		tile.occupant = [];
+		tile.space = 1;
 		tile.isWall = false;
 		tile.bakeOn(this.base.exit);
 
@@ -1130,12 +1134,12 @@ var Border = function(all) {
 	this.all = all;
 	this.i = null;
 };
-Border.prototype.open = function() {
+Border.prototype.open = function(size) {
 	var open = [];
 
 	this.i = this.all.length;
 	while (this.i--) {
-		if (!this.all[this.i].occupant) open.push(this.all[this.i]);
+		if (this.all[this.i].space >= size) open.push(this.all[this.i]);
 	}
 
 	return open;
@@ -1234,6 +1238,7 @@ var Tile = function(x, y, draw, tiles) {
 	this.border = null;
 	//this.space = null;
 	this.occupant = this;
+	this.space = 0;
 	this.isWall = true;
 
 	this.light = 0;
@@ -1257,14 +1262,17 @@ Tile.prototype.setFog = function() {
 	this.fog.b.bake();
 };
 Tile.prototype.occupy = function(entity, override) {
-	this.occupant = entity;
+	this.occupant.push(entity);
+	this.space -= entity.size;
 	if (!override) {
 		if (this.exit) this.callback(entity, this.exit);
 		else if (this.callback) this.callback(entity);
 	}
 };
 Tile.prototype.leave = function(entity) {
-	this.occupant = null;
+	this.occupant.splice(this.occupant.indexOf(entity), 1);
+	this.space += entity.size;
+
 };
 Tile.prototype.applyLight = function() {
 	this.lit.f.reset();
@@ -1278,9 +1286,9 @@ Tile.prototype.applyLight = function() {
 Tile.prototype.drawPC = function(pcCanSeeId, draw) {
 	this.applyLight();
 	if (this.pcCanSee === pcCanSeeId) {
-		if (this.occupant && !this.isWall) {
-			draw.c = this.occupant.state.c;
-			draw.f = this.occupant.lit;
+		if (this.occupant.length) {
+			draw.c = this.occupant[this.occupant.length - 1].state.c;
+			draw.f = this.occupant[this.occupant.length - 1].lit;
 			draw.b = this.lit.b;
 		} else {
 			draw.c = this.state.c;
@@ -1299,9 +1307,9 @@ Tile.prototype.drawPC = function(pcCanSeeId, draw) {
 Tile.prototype.drawFog = function(pcCanSeeId, draw) {
 	if (this.pcCanSee === pcCanSeeId) {
 		this.applyLight();
-		if (this.occupant && !this.isWall) {
-			draw.c = this.occupant.state.c;
-			draw.f = this.occupant.lit;
+		if (this.occupant.length) {
+			draw.c = this.occupant[this.occupant.length - 1].state.c;
+			draw.f = this.occupant[this.occupant.length - 1].lit;
 			draw.b = this.lit.b;
 		} else {
 			draw.c = this.state.c;
@@ -1324,9 +1332,9 @@ Tile.prototype.drawFog = function(pcCanSeeId, draw) {
 };
 Tile.prototype.drawFull = function(pcCanSeeId, draw) {
 	this.applyLight();
-	if (this.occupant && !this.isWall) {
-		draw.c = this.occupant.state.c;
-		draw.f = this.occupant.lit;
+	if (this.occupant.length) {
+		draw.c = this.occupant[this.occupant.length - 1].state.c;
+		draw.f = this.occupant[this.occupant.length - 1].lit;
 		draw.b = this.lit.b;
 	} else {
 		draw.c = this.state.c;
