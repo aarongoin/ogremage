@@ -6,7 +6,7 @@
 	height: 50,
 	size: 2500,
 
-	fov: "fog",
+	fov: "pc",
 	clock: 1,
 
 	base: {
